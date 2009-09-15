@@ -1,0 +1,117 @@
+#This is the three leaf transducer model read in by Ortheus.
+#It consists of two leaves (always X and Z) and the ancestor branch (always 
+#denoted Y). It also allows one to specify the substitution model.
+
+#We specify parameters using lines starting with P or C
+#They must always be of the form [a-z][a-z0-9]* = non-log floating-point number
+#Parameters can be recursively defined. 
+#The parameter dX and dZ are the distance parameters, these are created by default, 
+#and must not be specified.
+#Parameters and calculations are assumed to not be in log-space, and are converted to log-space for
+#calculation by the script.
+
+
+P aX = 0.025*DX
+P bX = 0.025*DX
+P gX = 0.7
+P dX = 0.7
+
+#We can place comments and white space lines where we want.
+
+P aZ = 0.025*DZ
+P bZ = 0.025*DZ
+P gZ = 0.7
+P dZ = 0.7
+
+#If line starts with C it is a parameter related to the root.
+#These values are summed out after a round of alignment
+C e = 1.0f - 1.0f/1000
+C eM = 1.0f/1000
+
+#We specify states using the lines starting with S
+#They are of the form.. S [a-z][a-z0-9]* = state-type
+ 
+#State types are START, END, SILENT, INSERT_X, INSERT_Z, DELETE_X, 
+#and DELETE_Z, DELETE_XZ and MATCH
+
+S s0 = START
+S s1 = INSERT_Z
+S s2 = INSERT_X
+S s3 = SILENT
+S s4 = SILENT
+S s5 = MATCH
+S s6 = DELETE_Z
+S s7 = DELETE_XZ
+S s8 = DELETE_X
+S s9 = SILENT
+S s10 = SILENT
+S s11 = INSERT_X
+S s12 = INSERT_Z
+S s13 = END
+
+
+#We specify the transitions using lines starting with T
+#They are of the form.. T state-name --> state-name = parameter-expression 
+#(python formatted, using python math library)
+#The left state is the from state, the right state is the to state.
+
+T s0 --> s3 = 1 
+
+T s1 --> s1 = aZ
+T s1 --> s2 = (1 - dZ)*aZ
+T s1 --> s4 = (1 - dZ)*(1 - aX)
+
+T s2 --> s4 = 1 - dX
+T s2 --> s2 = dX
+
+T s3 --> s2 = (1 - aZ)*aX
+T s3 --> s4 = (1 - aZ)*(1 - aX)
+
+T s4 --> s5 = (1 - bX)*(1 - bZ)*e
+T s4 --> s6 = (1 - bX)*bZ*e
+T s4 --> s7 = bX*bZ*e
+T s4 --> s8 = bX*(1-bZ)*e
+T s4 --> s13 = eM
+
+T s5 --> s3 = 1
+
+T s6 --> s3 = 1 - gZ
+T s6 --> s9 = (1 - aX)*gZ
+T s6 --> s11 = aX*gZ
+
+T s7 --> s3 = (1 - gX)*(1 - gZ) 
+T s7 --> s7 = gX*gZ*e
+T s7 --> s9 = (1 - aX)*(1 - gX)*gZ
+T s7 --> s10 = (1 - aZ)*gX*(1 - gZ)
+T s7 --> s13 = eM
+
+T s8 --> s3 = 1 - gX 
+T s8 --> s10 = (1 - aZ)*gX
+T s8 --> s12 = gX*aZ
+
+T s9 --> s6 = 1 - bX
+T s9 --> s7 = bX*e
+T s9 --> s13 = eM
+
+T s10 --> s7 = bZ
+T s10 --> s8 = (1 - bZ)*e
+T s10 --> s13 = eM
+
+T s11 --> s9 =  1 - dX
+T s11 --> s11 = dX
+
+T s12 --> s10 = 1 - dZ
+T s12 --> s12 = dZ
+
+#Specify the substitution model with a M line (currently only HKY supported)
+#Each of these submodels could have a different set of parameters, for now
+#the hky model is specified as follows:
+
+M HKY 0.3 0.2 0.2 0.3 2.0
+
+#Where the values after the HKY specifier are specific to the HKY function
+#In this case stationary frequencies of nucleotides A, C, G, T and then transition to
+#transversion ratio.
+
+
+

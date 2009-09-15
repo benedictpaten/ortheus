@@ -1,0 +1,125 @@
+(branch
+ (transducer ROOT)
+ (branch (transducer AFFINE_BRANCH_X))
+ (branch (transducer AFFINE_BRANCH_Z))
+ )
+
+(transducer
+
+ (name AFFINE_BRANCH_X)
+
+ (state (name S) (type start))
+ (state (name E) (type end))
+ (state (name W) (type wait))
+ (state (name X1) (type wait))
+ (state (name X2) (type wait))
+ (state (name M) (type match))
+ (state (name D1) (type delete))
+ (state (name D2) (type delete))
+ (state (name I1) (type insert))
+ (state (name I2) (type insert))
+
+ (transition (from S) (to I1) (label aX))
+ (transition (from S) (to I2) (label aX))
+ (transition (from S) (to W) (label maX))
+
+ (transition (from W) (to M) (label mbX))
+ (transition (from W) (to D1) (label bX))
+ (transition (from W) (to D2) (label bX))
+ (transition (from W) (to E))
+
+ (transition (from X1) (to D1))
+ (transition (from X1) (to E))
+ 
+ (transition (from X2) (to D2))
+ (transition (from X2) (to E))
+
+ (transition (from M) (to I1) (label aX))
+ (transition (from M) (to I2) (label aX))
+ (transition (from M) (to W) (label maX))
+
+ (transition (from D1) (to I1) (label mgX*aX))
+ (transition (from D1) (to I2) (label mgX*aX))
+ (transition (from D1) (to W) (label mgX*maX))
+ (transition (from D1) (to X1) (label gX))
+ 
+ (transition (from D2) (to I1) (label mgX*aX))
+ (transition (from D2) (to I2) (label mgX*aX))
+ (transition (from D2) (to W) (label mgX*maX))
+ (transition (from D2) (to X2) (label gX))
+
+ (transition (from I1) (to I1) (label dX))
+ (transition (from I1) (to W) (label mdX))
+ 
+ (transition (from I2) (to I2) (label dX))
+ (transition (from I2) (to W) (label mdX))
+)
+
+(transducer
+
+ (name AFFINE_BRANCH_Z)
+
+ (state (name S) (type start))
+ (state (name E) (type end))
+ (state (name W) (type wait))
+ (state (name X1) (type wait))
+ (state (name X2) (type wait))
+ (state (name M) (type match))
+ (state (name D1) (type delete))
+ (state (name D2) (type delete))
+ (state (name I1) (type insert))
+ (state (name I2) (type insert))
+
+ (transition (from S) (to I1) (label aX))
+ (transition (from S) (to I2) (label aX))
+ (transition (from S) (to W) (label maX))
+
+ (transition (from W) (to M) (label mbX))
+ (transition (from W) (to D1) (label bX))
+ (transition (from W) (to D2) (label bX))
+ (transition (from W) (to E))
+
+ (transition (from X1) (to D1))
+ (transition (from X1) (to E))
+ 
+ (transition (from X2) (to D2))
+ (transition (from X2) (to E))
+
+ (transition (from M) (to I1) (label aX))
+ (transition (from M) (to I2) (label aX))
+ (transition (from M) (to W) (label maX))
+
+ (transition (from D1) (to I1) (label mgX*aX))
+ (transition (from D1) (to I2) (label mgX*aX))
+ (transition (from D1) (to W) (label mgX*maX))
+ (transition (from D1) (to X1) (label gX))
+ 
+ (transition (from D2) (to I1) (label mgX*aX))
+ (transition (from D2) (to I2) (label mgX*aX))
+ (transition (from D2) (to W) (label mgX*maX))
+ (transition (from D2) (to X2) (label gX))
+
+ (transition (from I1) (to I1) (label dX))
+ (transition (from I1) (to W) (label mdX))
+ 
+ (transition (from I2) (to I2) (label dX))
+ (transition (from I2) (to W) (label mdX))
+)
+
+(transducer
+
+ (name ROOT)
+
+ (state (name S) (type start))
+ (state (name E) (type end))
+ (state (name W) (type wait))
+ (state (name I) (type insert))
+
+ (transition (from S) (to I) (label e))
+ (transition (from S) (to W) (label me))
+
+ (transition (from I) (to I) (label e))
+ (transition (from I) (to W) (label me))
+
+ (transition (from W) (to E))
+)

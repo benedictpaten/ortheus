@@ -1,0 +1,49 @@
+#Parameters file for affineModel.sxpr
+
+#We specify parameters using lines starting with P or C
+#They must always be of the form [a-z][a-z0-9]* = non-log floating-point number
+#Parameters can be recursively defined. 
+#The parameter dX and dZ are the distance parameters, these are created by default, 
+#and must not be specified.
+#Parameters and calculations are assumed to not be in log-space, and are converted to log-space for
+#calculation by the script.
+
+O gO = 0.0025
+O gC = 0.7 
+
+P aX = gO*DX
+P bX = gO*DX
+P gX = gC
+P dX = gC
+
+P maX = 1 - aX
+P mbX = 1 - bX
+P mgX = 1 - gX
+P mdX = 1 - dX
+
+P aZ = gO*DZ
+P bZ = gO*DZ
+P gZ = gC
+P dZ = gC
+
+P maZ = 1 - aZ
+P mbZ = 1 - bZ
+P mgZ = 1 - gZ
+P mdZ = 1 - dZ
+
+#If line starts with C it is a parameter related to the root.
+#These values are summed out after a round of alignment
+
+B e = 0.999
+C me = 1 - e
+
+
+#Specify the substitution model with a M line (currently only HKY supported)
+#Each of these submodels could have a different set of parameters, for now
+#the hky model is specified as follows:
+
+M HKY 0.3 0.2 0.2 0.3 2.0
+
+#Where the values after the HKY specifier are specific to the HKY function
+#In this case stationary frequencies of nucleotides A, C, G, T and then transition to
+#transversion ratio.

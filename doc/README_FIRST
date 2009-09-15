@@ -1,0 +1,76 @@
+This is the readme for Ortheus (v0.1) 12/4/2007 DD/MM/YY
+
+Ortheus is a program for reconstructing the ancestral history of a set of sequences. 
+It is able to infer a tree (or one may be provided) and then create a tree alignment
+of the sequences that includes ML reconstructions of the ancestral sequences. Ortheus
+is based upon a probabilistic transducer model and handles the evolution of both 
+substitutions, insertions and deletions.
+
+Ortheus was developed by Benedict Paten in the group of Ewan Birney at the EBI. You contact
+me (Benedict) at bjp (AT) ebi (DOT) ac (DOT) uk.
+
+The input is generally a set of sequences (in Fasta format) (and optionally a tree in 
+Newick format), while the output is a multi-fasta alignment containing both the leaves 
+and ancestor sequences, and a tree (if none was given initially).
+
+To run Ortheus type python Ortheus.py [arguments] (after following the installation instructions). To see
+the list of all possible arguments simply omit all arguments. The only mandatory
+arguments are the list of sequence files (which must number greater than or equal
+to two). If a tree is not specified then Ortheus will estimate a tree, using
+neighbor joining, and place that estimated tree in a file. See 'ON TREE ESTIMATION' below.
+
+INSTALLATION REQUIREMENTS : 
+
+Ortheus requires working installations of Java (v1.5 and higher), 
+Python (v2.3 and higher), and a C compiler (GCC is assumed by default, to change
+it edit the make file). Ortheus works with Pecan (a version of which is hidden
+in the distribution) and therefore requires the installation of Exonerate 
+(tested with version 1.0, but it may work with newer versions also, please let
+me know). 
+
+The simplest way to make Ortheus work is to ensure that the java, 
+python and exonerate commands point to compatible versions of the programs.
+If you need to specify these commands using non-standard keywords then please
+see the command line arguments. To pass the exonerate command to Pecan it is 
+necessary to use the extra Pecan arguments option in the Ortheus.py script
+to pass the argument to Pecan.
+
+As a simple example Ortheus might be called as follows..
+
+Ortheus.py -e seq1.fa seq2.fa -m '~/bin/jre1.6.0/bin/java' -l '#-J exonerate-1.0.0'
+
+Where the java and exonerate paths are specified explicitly using alternative keywords, and a 
+tree is to be estimated. The output alignment would be in a file called 'output.mfa' and
+the output tree (with branch lengths) would be in a file called 'output.newick'.
+
+Another example including a tree..
+
+python Ortheus.py -d '(0:0.1, 1:0.1);' -e seq1.fa seq2.fa
+
+ON TREE ESTIMATION
+
+As mentioned, Ortheus will attempt to estimate a tree is none is specified. This relies on using the Semphy program,
+which must be installed and callable using the 'semphy' command. The strategy for tree building is pretty simple.
+
+For given number of iterations, generate a random binary tree, and align sequences using Pecan. Take ungapped columns and 
+feed to Semphy to do NJ with HKY model. Transition/transversion ratio = 2.0, 40% GC content. (You can easily hack the code 
+to change these arguments, hint, look in estimateTree.py) Refine branch length estimations by calculating ratio of observed 
+distances in ungapped columns of entire alignment vs. smaller sub-alignments where the branch lengths are lower, and less 
+conservation bias is present. Finally (and optionally) root the binary tree by finding the mid-branch point in the tree which 
+implies the fewest number of duplications (first sort term) and losses (second sort term, breaking ties when duplication number is even), when reconciled with a given species tree.
+
+Example... 
+
+Ortheus.py -b -e CAT_5k CHIMP_5k BABOON_5k RAT_5k -A cat chimp baboon rat -z '((((human, chimp), baboon),(mouse,rat)),(cat,dog));' 
+
+The -A argument tells Ortheus what species each sequence comes from, and matches members of the species-tree leaf node set. 
+This avoids the problem of having to match up fasta fields or sequence names with the labels in the species tree.
+
+IMPORTANT : As with Pecan, the order of the sequence arguments must correspond with the left to right
+order of the nodes in the tree. Pecan and Ortheus do not actually care about the names of the nodes in the
+tree, just the ordering and its correspondence to the ordering of the sequence files. 
+
+The source code is distributed for all of the code (though I don't claim it's readable), except 
+for Pecan, which I will get round to releasing when I get a chance to make it a little less messy. 
+What you can read is all open source etc., and where I have used other's code (i.e. the hash library etc) 
+it should be pretty clear.

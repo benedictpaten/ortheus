@@ -1,0 +1,89 @@
+(branch
+ (transducer ROOT)
+ (branch (transducer AFFINE_BRANCH_X))
+ (branch (transducer AFFINE_BRANCH_Z))
+ )
+
+(transducer
+
+ (name AFFINE_BRANCH_X)
+
+ (state (name S) (type start))
+ (state (name E) (type end))
+ (state (name W) (type wait))
+ (state (name X) (type wait))
+ (state (name M) (type match))
+ (state (name D) (type delete))
+ (state (name I) (type insert))
+
+ (transition (from S) (to I) (label aX))
+ (transition (from S) (to W) (label maX))
+
+ (transition (from W) (to M) (label mbX))
+ (transition (from W) (to D) (label bX))
+ (transition (from W) (to E))
+
+ (transition (from X) (to D))
+ (transition (from X) (to E))
+
+ (transition (from M) (to I) (label aX))
+ (transition (from M) (to W) (label maX))
+
+ (transition (from D) (to I) (label mgX*aX))
+ (transition (from D) (to W) (label mgX*maX))
+ (transition (from D) (to X) (label gX))
+
+ (transition (from I) (to I) (label dX))
+ (transition (from I) (to W) (label mdX))
+)
+
+(transducer
+
+ (name AFFINE_BRANCH_Z)
+
+ (state (name S) (type start))
+ (state (name E) (type end))
+ (state (name W) (type wait))
+ (state (name X) (type wait))
+ (state (name M) (type match))
+ (state (name D) (type delete))
+ (state (name I) (type insert))
+
+ (transition (from S) (to I) (label aZ))
+ (transition (from S) (to W) (label maZ))
+
+ (transition (from W) (to M) (label mbZ))
+ (transition (from W) (to D) (label bZ))
+ (transition (from W) (to E))
+
+ (transition (from X) (to D))
+ (transition (from X) (to E))
+
+ (transition (from M) (to I) (label aZ))
+ (transition (from M) (to W) (label maZ))
+
+ (transition (from D) (to I) (label mgZ*aZ))
+ (transition (from D) (to W) (label mgZ*maZ))
+ (transition (from D) (to X) (label gZ))
+
+ (transition (from I) (to I) (label dZ))
+ (transition (from I) (to W) (label mdZ))
+)
+
+(transducer
+
+ (name ROOT)
+
+ (state (name S) (type start))
+ (state (name E) (type end))
+ (state (name W) (type wait))
+ (state (name I) (type insert))
+
+ (transition (from S) (to I) (label e))
+ (transition (from S) (to W) (label me))
+
+ (transition (from I) (to I) (label e))
+ (transition (from I) (to W) (label me))
+
+ (transition (from W) (to E))
+)
