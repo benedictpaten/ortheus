@@ -639,7 +639,8 @@ int main(int argc, char *argv[]) {
 
     //tree stuff
     logInfo("Newick-Tree : %s\n", newickTreeString);
-    newickTree = newickTreeParser(newickTreeString, DEFAULT_BINARY_TREE_DISTANCE, &newickTreeLeafStrings);
+    newickTree = newickTreeParser(newickTreeString, DEFAULT_BINARY_TREE_DISTANCE);
+    newickTreeLeafStrings = binaryTree_getOrderedLeafStrings(newickTree);
     binaryTree_depthFirstNumbers(newickTree);
     logDebug("Parsed tree\n");
     nodeNumber = newickTree->traversalID->midEnd;
