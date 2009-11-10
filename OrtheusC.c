@@ -639,7 +639,7 @@ int main(int argc, char *argv[]) {
 
     //tree stuff
     logInfo("Newick-Tree : %s\n", newickTreeString);
-    newickTree = newickTreeParser(newickTreeString, DEFAULT_BINARY_TREE_DISTANCE);
+    newickTree = newickTreeParser(newickTreeString, DEFAULT_BINARY_TREE_DISTANCE, 0);
     newickTreeLeafStrings = binaryTree_getOrderedLeafStrings(newickTree);
     binaryTree_depthFirstNumbers(newickTree);
     logDebug("Parsed tree\n");
