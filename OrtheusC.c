@@ -650,7 +650,7 @@ int main(int argc, char *argv[]) {
     subModels = mallocLocal(sizeof(void *)*nodeNumber);
     getBinaryTreeNodesInMidOrder(newickTree, binaryTreeNodes);
     if(LOG_LEVEL == LOGGING_DEBUG) {
-        printBinaryTree(stderr, newickTree, newickTreeStrings);
+        printBinaryTree(stderr, newickTree);
     }
     logInfo("Newick-Tree seems okay\n");
     //parse sequences
