@@ -2857,6 +2857,7 @@ struct SequenceGraph *align_BottomUpScript(struct BinaryTree *binaryTree, struct
                                         traversalID, traversalIDX, traversalIDY,
                                         leftMostSeqNo, leafSeqNoX, leafSeqNoY,
                                         numberOfSamples, treeStates);
+        logInfo("sequence graph successfull\n");
         //memory clean up of input graphs
         destructSequenceGraph(sequenceGraphX, TRUE);
         destructSequenceGraph(sequenceGraphY, TRUE);

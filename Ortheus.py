@@ -41,7 +41,7 @@ from ortheus.old.tree import calculateCharacterFrequencies
 from ortheus.old.tree import normaliseWV
 from ortheus.old.tree import sumWVA
 
-VERSION_NO="0.5.0"
+VERSION_NO="0.5.0-ensembl-2010-01-13"
 
 def addDefaultArgs(alignerArgs):
     alignerArgs.OUTPUT_FILE = "output.mfa" 

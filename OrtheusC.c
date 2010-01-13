@@ -25,6 +25,11 @@
 #include "constraintsC.h"
 
 /////////////////////////////////////////////////////////
+// VERSION
+char VERSION[20] = "ensembl-2010-01-13\0";
+/////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 //parameters
@@ -555,6 +560,7 @@ int main(int argc, char *argv[]) {
 
     if(argc == 1) {
         fprintf(stderr, "Ortheus [MODIFIER_ARGUMENTS]\n");
+        fprintf(stderr, "Version: %s\n", VERSION);
         fprintf(stderr, "A program for the inferral of ancestor sequences\n");
         fprintf(stderr, "Arguments:\n");
         fprintf(stderr, "\t-a [FILE]xN input sequence files (-a or -A required)\n");

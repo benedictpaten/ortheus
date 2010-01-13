@@ -257,7 +257,7 @@ void addMiddleConstraints(int64_t *nonGaps, int64_t nonGapsLength,
 
     for(i=0; i < nonGapsLength; i++) {
         //for j in xrange(i+1, len(nonGaps)):
-        for(j=i+1; j<gapsLength; j++) {
+        for(j=0; j<gapsLength; j++) {
             seqX = nonGaps[i];
             seqY = gaps[j];
             posX = indices[seqX];
@@ -707,11 +707,9 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
     return primeConstraints;
 }
 
-struct Constraints ***buildAllConstraints_StartFromMinusOne(struct hashtable **lessThanConstraints,
+struct Constraints ***buildAllConstraints(struct hashtable **lessThanConstraints,
                                                             struct hashtable **lessThanOrEqualConstraints,
                                                             int64_t seqNo, int64_t *seqLengths) {
-    //the basic constraINT_32 algorithm assumes an offset starting at 0, but we need a -1 offset, for the position
-    //before the first position, this is what this dirty wrapper function achieves
     int64_t *temp;
     int64_t i;
     int64_t j;
@@ -729,18 +727,6 @@ struct Constraints ***buildAllConstraints_StartFromMinusOne(struct hashtable **l
     }
     //primeConstraints =  [ buildConstraints(lessThanConstraints, lessThanOrEqualConstraints,
     //                                       selectedSeq, seqNo, seqLengths) for selectedSeq in xrange(0, seqNo) ]
-    //for seq1 in xrange(0, seqNo):
-    for(i=0; i<seqNo; i++) {
-        //for seq2 in xrange(0, seqNo):
-        for(j=0; j<seqNo; j++) {
-            primeConstraints = primeConstraintsMatrix[i][j];
-            for(k=0; k<primeConstraints->length-1; k++) {
-            //for i in xrange(1, len(constraints.xList)-1):
-                primeConstraints->xList[k] -= 1;
-                primeConstraints->yList[k] -= 1;
-            }
-        }
-    }
     //memory clean up
     free(temp);
     //end clean up
@@ -769,7 +755,7 @@ struct Constraints ***buildAllConstraints_FromAlignment(char **alignment, int64_
     }
     lessThanOrEqualConstraints = getEmptyConstraints(seqNo, FALSE, intChunks);
 
-    primeConstraintsMatrix = buildAllConstraints_StartFromMinusOne(lessThanConstraints, lessThanOrEqualConstraints, seqNo, seqLengths);
+    primeConstraintsMatrix = buildAllConstraints(lessThanConstraints, lessThanOrEqualConstraints, seqNo, seqLengths);
 
     //memory clean up
     for(i=0; i<seqNo*seqNo; i++) {
