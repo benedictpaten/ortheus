@@ -280,10 +280,6 @@ struct Constraints ***buildPrimeConstraints(char *alignmentFile, int32_t seqNo, 
         fastaNames = constructEmptyList(0, free);
 
         alignmentStream = fopen(alignmentFile, "r");
-        if (alignmentStream == NULL) {
-            fprintf(stderr, "could not open alignment %s.\n", alignmentFile);
-            exit(10);
-        }
         fastaRead(alignmentStream, alignmentSeqs, alignmentSeqLengths, fastaNames);
         fclose(alignmentStream);
 
@@ -317,10 +313,6 @@ struct List *parseSequences(char **argv, int32_t inputSequenceNumber, int32_t *s
     for(i=0; i<inputSequenceNumber; i++) {
         logInfo("Sequence file : %s\n", argv[i]);
         fastaStream = fopen(argv[i], "r");
-        if (fastaStream == NULL) {
-            fprintf(stderr, "could not open sequence %s.\n", argv[i]);
-            exit(10);
-        }
         fastaRead(fastaStream, seqs, seqLengths, fastaNames);
         fclose(fastaStream);
     }
@@ -647,7 +639,8 @@ int main(int argc, char *argv[]) {
 
     //tree stuff
     logInfo("Newick-Tree : %s\n", newickTreeString);
-    newickTree = newickTreeParser(newickTreeString, DEFAULT_BINARY_TREE_DISTANCE, &newickTreeLeafStrings);
+    newickTree = newickTreeParser(newickTreeString, DEFAULT_BINARY_TREE_DISTANCE, 0);
+    newickTreeLeafStrings = binaryTree_getOrderedLeafStrings(newickTree);
     binaryTree_depthFirstNumbers(newickTree);
     logDebug("Parsed tree\n");
     nodeNumber = newickTree->traversalID->midEnd;
@@ -657,7 +650,7 @@ int main(int argc, char *argv[]) {
     subModels = mallocLocal(sizeof(void *)*nodeNumber);
     getBinaryTreeNodesInMidOrder(newickTree, binaryTreeNodes);
     if(LOG_LEVEL == LOGGING_DEBUG) {
-        printBinaryTree(stderr, newickTree, newickTreeStrings);
+        printBinaryTree(stderr, newickTree);
     }
     logInfo("Newick-Tree seems okay\n");
     //parse sequences
@@ -691,10 +684,6 @@ int main(int argc, char *argv[]) {
     if(TREE_STATES_INPUT_FILE != NULL) {
         treeStates = mallocLocal(sizeof(int32_t)*nodeNumber);
         treeStatesFile = fopen(TREE_STATES_INPUT_FILE, "r");
-        if (treeStatesFile == NULL) {
-            fprintf(stderr, "could not open tree states file %s.\n", TREE_STATES_INPUT_FILE);
-            exit(10);
-        }
         readIntegers(treeStatesFile, nodeNumber, treeStates);
         fclose(treeStatesFile);
         for(i=0; i<nodeNumber; i++) {
@@ -724,10 +713,6 @@ int main(int argc, char *argv[]) {
     if(WRITE_MFA_ALIGNMENT) {
         if(OUTPUT_ALIGNMENT_FILE != NULL) {
             outputAlignment = fopen(OUTPUT_ALIGNMENT_FILE, "w");
-            if (outputAlignment == NULL) {
-                fprintf(stderr, "could not open alignment output file %s.\n", OUTPUT_ALIGNMENT_FILE);
-                exit(10);
-            }
             writeFastaAlignment(outputAlignment, (float **)wvAlignment->list, wvAlignment->length, newickTreeStrings, startSeq, seqInc, nodeNumber, dNAMap_WVToACTGFn, repeatBases);
             fclose(outputAlignment);
         }
@@ -753,10 +738,6 @@ int main(int argc, char *argv[]) {
             logInfo("Tree states to write : " INT_STRING " \n", treeStates[i]);
         }
         treeStatesFile = fopen(TREE_STATES_OUTPUT_FILE, "w");
-        if (treeStatesFile == NULL) {
-            fprintf(stderr, "could not open tree states output file %s.\n", TREE_STATES_OUTPUT_FILE);
-            exit(10);
-        }
         writeIntegers(treeStatesFile, nodeNumber, treeStates);
         fclose(treeStatesFile);
     }
@@ -813,10 +794,6 @@ int main(int argc, char *argv[]) {
 
     if(SCORE_OUTPUT_FILE != NULL) {
         scoreOutputFile = fopen(SCORE_OUTPUT_FILE, "w");
-        if (scoreOutputFile == NULL) {
-            fprintf(stderr, "could not open score output file %s.\n", SCORE_OUTPUT_FILE);
-            exit(10);
-        }
         fprintf(scoreOutputFile, "%f\n", totalScore);
         fclose(scoreOutputFile);
     }
