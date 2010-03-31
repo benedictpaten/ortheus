@@ -187,7 +187,7 @@ struct AlignmentDataStructures {
     int32_t *treeStates;
 };
 
-inline int32_t stateNo();
+int32_t stateNo();
 
 float *startStates(struct CombinedTransitionModel *model);
 
@@ -197,51 +197,51 @@ float *endStates(struct CombinedTransitionModel *model);
 
 //void turnOffDeleteXYLoopCorrection(struct CombinedTransitionModel *model);
 
-inline void silentFn(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, float *cell,
+void silentFn(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, float *cell,
 					  void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float));
 
-//inline void silentFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *, INT_32, INT_32, FLOAT_32));
+//void silentFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *, INT_32, INT_32, FLOAT_32));
 
-//inline void deleteFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *, INT_32, INT_32, FLOAT_32));
+//void deleteFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *, INT_32, INT_32, FLOAT_32));
 
-//inline void deleteDeleteFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *, INT_32, INT_32, FLOAT_32));
+//void deleteDeleteFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *, INT_32, INT_32, FLOAT_32));
 
-inline void silentFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float, float));
+void silentFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float, float));
 
-inline void deleteFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float, float));
+void deleteFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float, float));
 
-inline void insertXFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
+void insertXFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
                        void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float));
 
-inline void insertXFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
+void insertXFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
                        void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float, float));
 
-inline void insertYFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
+void insertYFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
                       void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float));
 
-inline void insertYFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
+void insertYFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
                       void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float, float));
 
-inline void deleteXFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
+void deleteXFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
                       void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float));
 
-inline void deleteXFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
+void deleteXFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
                       void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float, float));
 
-inline void deleteYFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
+void deleteYFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
                       void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float));
 
-inline void deleteYFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
+void deleteYFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, struct Edge *edge,
                       void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float, float));
 
-inline void matchFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model,
+void matchFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model,
             struct Edge *edgeX, struct Edge *edgeY, void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float));
 
-inline void matchFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model,
+void matchFn_TraceBack(struct AlignmentDataStructures *, struct CombinedTransitionModel *model,
             struct Edge *edgeX, struct Edge *edgeY, void (*assignFn)(struct AlignmentDataStructures *, int32_t, int32_t, float, float));
 
 //Functions for input output of transducers.
-inline void printParamStruct();
+void printParamStruct();
 
 struct ParameterStruct *constructParamStruct(int argc, char *argv[]);
 

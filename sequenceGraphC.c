@@ -132,7 +132,7 @@ void mergeNonRedundantCollections(struct List *collection1, struct List *collect
     }
 }
 
-inline int32_t legalCollection_GreaterThan(int32_t *a, int32_t *b, int32_t length) {
+int32_t legalCollection_GreaterThan(int32_t *a, int32_t *b, int32_t length) {
     int32_t i;
 
     for(i=0; i<length; i++) {
@@ -143,7 +143,7 @@ inline int32_t legalCollection_GreaterThan(int32_t *a, int32_t *b, int32_t lengt
     return FALSE;
 }
 
-inline int32_t legalCollection_LessThan(int32_t *a, int32_t *b, int32_t length) {
+int32_t legalCollection_LessThan(int32_t *a, int32_t *b, int32_t length) {
     int32_t i;
 
     for(i=0; i<length; i++) {
@@ -154,19 +154,19 @@ inline int32_t legalCollection_LessThan(int32_t *a, int32_t *b, int32_t length) 
     return FALSE;
 }
 
-inline int32_t lessThan(int32_t i, int32_t j) {
+int32_t lessThan(int32_t i, int32_t j) {
     return i < j;
 }
 
-inline int32_t greaterThan(int32_t i, int32_t j) {
+int32_t greaterThan(int32_t i, int32_t j) {
     return i > j;
 }
 
-inline int32_t edgeFrom(struct Edge *edge) {
+int32_t edgeFrom(struct Edge *edge) {
     return edge->from;
 }
 
-inline int32_t edgeTo(struct Edge *edge) {
+int32_t edgeTo(struct Edge *edge) {
     return edge->to;
 }
 
@@ -521,7 +521,7 @@ void destructTraceBackEdge(struct TraceBackEdge *edge) {
     free(edge);
 }
 
-inline int32_t edgeComparator(struct Edge *edge1, struct Edge *edge2) {
+int32_t edgeComparator(struct Edge *edge1, struct Edge *edge2) {
     int32_t i;
     int32_t j;
     float k;
@@ -1038,7 +1038,7 @@ struct Edge *getMinEdge(void** edges, int32_t *size) { //not the best way of doi
     return edge1;
 }
 
-inline int32_t extendEnds_isLegalEnds(struct AlignmentDataStructures *aDS, int32_t *sequenceCoordinates, int32_t *sequenceConstraints) {
+int32_t extendEnds_isLegalEnds(struct AlignmentDataStructures *aDS, int32_t *sequenceCoordinates, int32_t *sequenceConstraints) {
     int32_t seq;
     for (seq=0; seq<aDS->leafSeqNoX; seq++) {
         if (sequenceCoordinates[seq] <= sequenceConstraints[seq]) {
@@ -1154,18 +1154,18 @@ void extendEnds(struct AlignmentDataStructures *aDS, struct List *vertices, stru
     hashtable_destroy(newVertices_Set, FALSE, FALSE);
 }
 
-inline int64_t v(struct AlignmentDataStructures *aDS, int64_t x, int64_t y) {
+int64_t v(struct AlignmentDataStructures *aDS, int64_t x, int64_t y) {
     return (y + x*aDS->vertexYNo)*stateNo();
 }
 
 
 #define MAX_Z 10000
 
-inline int64_t vZ(struct AlignmentDataStructures *aDS, int64_t x, int64_t y, int64_t z) {
+int64_t vZ(struct AlignmentDataStructures *aDS, int64_t x, int64_t y, int64_t z) {
     return (y + x*aDS->vertexYNo)*(stateNo()*MAX_Z) + (MAX_Z - z - 1)*stateNo();
 }
 
-inline void rVZ(struct AlignmentDataStructures *aDS, int64_t c, int32_t *x, int32_t *y, int32_t *z, int32_t *state) { //reverse vertex number function
+void rVZ(struct AlignmentDataStructures *aDS, int64_t c, int32_t *x, int32_t *y, int32_t *z, int32_t *state) { //reverse vertex number function
     int32_t vertexNo;
 
     vertexNo = aDS->vertexYNo;
@@ -1176,21 +1176,21 @@ inline void rVZ(struct AlignmentDataStructures *aDS, int64_t c, int32_t *x, int3
     *x = c / vertexNo;
 }
 
-inline int32_t rVZ_State(struct AlignmentDataStructures *aDS, int64_t c) {
+int32_t rVZ_State(struct AlignmentDataStructures *aDS, int64_t c) {
     return c % stateNo();
 }
 
-inline int64_t rVZ_StatelessVertex(struct AlignmentDataStructures *aDS, int64_t c) {
+int64_t rVZ_StatelessVertex(struct AlignmentDataStructures *aDS, int64_t c) {
     return c - rVZ_State(aDS, c);
 }
 
-inline int64_t rVZ_Zless(struct AlignmentDataStructures *aDS, int64_t c) {
+int64_t rVZ_Zless(struct AlignmentDataStructures *aDS, int64_t c) {
 	int32_t x, y, z, state;
 	rVZ(aDS, c, &x, &y, &z, &state);
 	return v(aDS, x, y);
 }
 
-inline float *getTempCell(struct AlignmentDataStructures *aDS, int64_t vertex, struct Chunks *matrixChunks, struct hashtable *matrix) {
+float *getTempCell(struct AlignmentDataStructures *aDS, int64_t vertex, struct Chunks *matrixChunks, struct hashtable *matrix) {
     int64_t *chunk;
     float *cell;
     int32_t i;
@@ -1207,7 +1207,7 @@ inline float *getTempCell(struct AlignmentDataStructures *aDS, int64_t vertex, s
     return cell;
 }
 
-inline float *getCell(struct AlignmentDataStructures *aDS, int64_t vertex) {
+float *getCell(struct AlignmentDataStructures *aDS, int64_t vertex) {
     int64_t *chunk;
     struct List *chunkList;
     int32_t i;
@@ -1233,7 +1233,7 @@ inline float *getCell(struct AlignmentDataStructures *aDS, int64_t vertex) {
     return (float *)(chunk + 1);
 }
 
-inline void addCell(struct AlignmentDataStructures *aDS, int64_t vertex, float *cell, int64_t *pVertex) {
+void addCell(struct AlignmentDataStructures *aDS, int64_t vertex, float *cell, int64_t *pVertex) {
     assert(*pVertex < vertex);
     *pVertex = vertex;
     int64_t *chunk;
@@ -1245,7 +1245,7 @@ inline void addCell(struct AlignmentDataStructures *aDS, int64_t vertex, float *
     memcpy(cell2, cell, stateNo()*sizeof(float));
 }
 
-inline void assignFromTo_Sum(struct AlignmentDataStructures *aDS, int32_t fromState, int32_t toState, float edgeScore) {
+void assignFromTo_Sum(struct AlignmentDataStructures *aDS, int32_t fromState, int32_t toState, float edgeScore) {
     LOG_PLUS_EQUALS(&aDS->toCell[toState], aDS->fromCell[fromState] + edgeScore);
 }
 
@@ -1692,7 +1692,7 @@ void computeMatrix(struct AlignmentDataStructures *aDS) {
     }
 }
 
-inline void assignSampling(struct AlignmentDataStructures *aDS,
+void assignSampling(struct AlignmentDataStructures *aDS,
 		int32_t fromState, int32_t toState, float edgeScore, float correctedEdgeScore) {
     float *fromVertices;
     struct TraceBackEdge *edge;
@@ -1709,7 +1709,7 @@ inline void assignSampling(struct AlignmentDataStructures *aDS,
     aDS->potentialEdges[aDS->potentialEdges_Index++] = edge;
 }
 
-inline void assignSampling_CheckState(struct AlignmentDataStructures *aDS,
+void assignSampling_CheckState(struct AlignmentDataStructures *aDS,
 		int32_t fromState, int32_t toState, float edgeScore, float correctedEdgeScore) {
     //neccesary because model
     //may have multiple states for each type of transition

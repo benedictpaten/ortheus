@@ -364,9 +364,9 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
         for fromState in i.keys():
             #print "This is", fromState, toState, i[fromState]
             outputFile.write("\tfloat tlt%s_%s = %s;\n" % (fromState, toState, i[fromState]))
-    outputFile.write("\tstatic float fA[STATE_NO];\n") 
-    outputFile.write("\tstatic float fA1[STATE_NO];\n") 
-    outputFile.write("\tstatic float fA2[STATE_NO];\n") 
+    outputFile.write("\t float fA[STATE_NO];\n") 
+    outputFile.write("\t float fA1[STATE_NO];\n") 
+    outputFile.write("\t float fA2[STATE_NO];\n") 
     outputFile.write("\tfloat *l1;\n\tfloat *l2;\n\tfloat *l3;\n") 
     outputFile.write("\tl1 = fA1;\n")
     outputFile.write("\tl2 = fA2;\n")
@@ -437,9 +437,9 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     #Forward match function
     outputFile.write("inline void matchFn(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model,") 
     outputFile.write("struct Edge *edgeX, struct Edge *edgeY, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float)) {\n")
-    outputFile.write("\tstatic float m[ALPHABET_SIZE];\n")
-    outputFile.write("\tstatic float i;\n")
-    outputFile.write("\tstatic float j;\n")
+    outputFile.write("\t float m[ALPHABET_SIZE];\n")
+    outputFile.write("\t float i;\n")
+    outputFile.write("\t float j;\n")
     outputFile.write("\tmultiplyWV(edgeX->wV, edgeY->wV, m, ALPHABET_SIZE);\n")
     outputFile.write("\ti = LOG(combineWV(m, model->ancestorProbs, ALPHABET_SIZE));\n")
     for toState in forwardModel.getStateNames(MATCH):
@@ -452,11 +452,11 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     #Traceback match function
     outputFile.write("inline void matchFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model,") 
     outputFile.write("struct Edge *edgeX, struct Edge *edgeY, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float, float)) {\n")
-    outputFile.write("\tstatic float m[ALPHABET_SIZE];\n")
-    outputFile.write("\tstatic float i;\n")
-    outputFile.write("\tstatic float j;\n")
-    outputFile.write("\tstatic float k;\n")
-    outputFile.write("\tstatic float l;\n")
+    outputFile.write("\t float m[ALPHABET_SIZE];\n")
+    outputFile.write("\t float i;\n")
+    outputFile.write("\t float j;\n")
+    outputFile.write("\t float k;\n")
+    outputFile.write("\t float l;\n")
     outputFile.write("\tmultiplyWV(edgeX->wV, edgeY->wV, m, ALPHABET_SIZE);\n")
     outputFile.write("\ti = LOG(sumWV(m, ALPHABET_SIZE));\n")
     outputFile.write("\tj = LOG(combineWV(m, model->ancestorProbs, ALPHABET_SIZE));\n")
@@ -489,7 +489,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
                 if i != SILENT and i != DELETE_XZ:
                     outputFile.write("\tassignFn(aDS, %s, %s, model->ft%s_%s);\n"  % (fromState, toState, fromState, toState))
     
-    outputFile.write("\tstatic float fA[STATE_NO];\n\tfloat i;\n")
+    outputFile.write("\t float fA[STATE_NO];\n\tfloat i;\n")
     for state in silentModel.getStateNames():
         outputFile.write("\tfA[%s] = cell[%s];\n" % (state, state))
     for toState in silentModel.getStateNames():
