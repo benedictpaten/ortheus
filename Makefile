@@ -27,13 +27,15 @@ ${binPath}/Ortheus.py : Ortheus.py old/Nester.py old/Stitcher.py old/EstimateTre
 
 ${binPath}/ortheus_core : *.c *.h xyzModelC.c xyzModelC.h ${libPath}/sonLib.a
 	${cxx} ${cflags} -I ${libPath} -o ${binPath}/ortheus_core *.c ${libPath}/sonLib.a
- 
+
+# stdin from </dev/null works around stray stdin read on OS/X that hangs backgroud
+# jobs
 xyzModelC.c xyzModelC.h : ${model} ${paramModel} TransducerComposer.py TransducerCompiler.py
 	rm -f model.otra xyzModelC.c xyzModelC.h ${modelPath}/model.dot ${modelPath}/ortheusmodel.pdf
-	python TransducerComposer.py ${model} temp.otra ${modelPath}/model.dot ${collapseCoefficient}
+	python TransducerComposer.py ${model} temp.otra ${modelPath}/model.dot ${collapseCoefficient} </dev/null
 	cat  ${paramModel} temp.otra > model.otra
 	rm temp.otra
-	python  TransducerCompiler.py model.otra xyzModelC.c xyzModelC.h
+	python  TransducerCompiler.py model.otra xyzModelC.c xyzModelC.h </dev/null
 	#Use this line if you want the pretty picture
 	#${makeGraph} ${modelPath}/model.dot -Tpdf > ${modelPath}/model.pdf
   
