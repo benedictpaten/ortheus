@@ -16,7 +16,7 @@ struct SubModel *constructSubModel(float *forward,
                                    int32_t alphabetSize) {
     struct SubModel *subModel;
 
-    subModel = (struct SubModel *)mallocLocal(sizeof(struct SubModel));
+    subModel = (struct SubModel *)st_malloc(sizeof(struct SubModel));
     subModel->forward = forward;
     subModel->backward = backward;
     subModel->stationaryDistribution = stationaryDistribution;
@@ -224,7 +224,7 @@ float *tamuraNei(float distance, float freqA, float freqC, float freqG, float fr
     float freq[] = { freqA, freqC, freqG, freqT };
     float alpha[] = { alphaPurine, alphaPyrimidine, alphaPurine, alphaPyrimidine };
 
-    matrix = (float *)mallocLocal(sizeof(float)*4*4);
+    matrix = (float *)st_malloc(sizeof(float)*4*4);
     //see page 203 of Felsenstein's Inferring Phylogenies for explanation of calculations
     for(i=0; i<4; i++) { //long winded, totally unoptimised method for calculating matrix
         for(j=0; j<4; j++) {
@@ -272,7 +272,7 @@ struct SubModel *constructHKYSubModel(float distance,
     float freq[] = { freqA, freqC, freqG, freqT };
 
     k = sizeof(float)*4;
-    i = (float *)memcpy(mallocLocal(k), freq, k);
+    i = (float *)memcpy(st_malloc(k), freq, k);
     return constructSubModel(hKY(distance, freqA, freqC, freqG, freqT, transitionTransversionRatio),
                              reverseSubMatrixInPlace(hKY(distance, freqA, freqC, freqG, freqT, transitionTransversionRatio), 4), i, 4);
 }
@@ -285,7 +285,7 @@ float *jukesCantor(float d) {
 
     i = 0.25 + 0.75*exp(-(4.0/3.0)*d);
     j = 0.25 - 0.25*exp(-(4.0/3.0)*d);
-    k = (float *)mallocLocal(sizeof(float)*4*4);
+    k = (float *)st_malloc(sizeof(float)*4*4);
     for(l=0; l<4*4; l++) {
         k[l] = j;
     }
@@ -299,7 +299,7 @@ struct SubModel *constructJukesCantorSubModel(float distance) {
     float *i;
     int32_t k;
 
-    i = (float *)mallocLocal(sizeof(float)*4);
+    i = (float *)st_malloc(sizeof(float)*4);
     for(k=0; k<4; k++) {
         i[k] = 0.25f;
     }
@@ -319,7 +319,7 @@ float jukesCantorCorrection(float subsPerSite) {
 	assert(subsPerSite >= 0.0);
 	assert(subsPerSite <= 1.0);
 	if(subsPerSite >= 0.749) { //Correction is not defined for distances greater than 0.75, where goes to infinity
-		logInfo("Warning, distance has been artificially rounded to 5 subs per site given distance: " "%f" "\n", subsPerSite);
+		st_logInfo("Warning, distance has been artificially rounded to 5 subs per site given distance: " "%f" "\n", subsPerSite);
 		return 5.0;
 	}
 	return -(3.0/4.0) * log(1.0 - ((4.0/3.0)*subsPerSite));
@@ -332,7 +332,7 @@ void kimuraCorrection(float transitionsPerSite, float transversionsPerSite,
 	assert(transitionsPerSite + transversionsPerSite <= 1.0);
 
 	if(transversionsPerSite >= 0.497 || transitionsPerSite + transversionsPerSite > 0.749) { //Correction is not defined for transversions per site greater than 0.5, where goes to infinity
-		logInfo("Warning, distance has been artificially rounded to 5 subs per site given transitions and transversion observations: " "%f" " " "%f" "\n", transitionsPerSite, transversionsPerSite);
+		st_logInfo("Warning, distance has been artificially rounded to 5 subs per site given transitions and transversion observations: " "%f" " " "%f" "\n", transitionsPerSite, transversionsPerSite);
 		*correctedTransitionsPerSite = 2.5;
 		*correctedTransversionsPerSite = 2.5;
 		return;

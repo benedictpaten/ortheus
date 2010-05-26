@@ -218,9 +218,9 @@ void calculateMergedSequenceCoordinates(int32_t **vertexSequenceCoordinates, str
 
     static struct List mergeList;
 
-    mergedSequenceCoordinates_Vertices = mallocLocal(sizeof(void *)*sequenceGraph->vertexNo);
-    mergedSequenceCoordinates_Edges = mallocLocal(sizeof(void *)*sequenceGraph->edges->length);
-    activeLeaves = mallocLocal(sizeof(int32_t)*leafSeqNo);
+    mergedSequenceCoordinates_Vertices = st_malloc(sizeof(void *)*sequenceGraph->vertexNo);
+    mergedSequenceCoordinates_Edges = st_malloc(sizeof(void *)*sequenceGraph->edges->length);
+    activeLeaves = st_malloc(sizeof(int32_t)*leafSeqNo);
 
     //for vertex in vertexOrder(sequenceGraph):
     for(vertex=vertexStart; vertex!=vertexEnd; vertex+=vertexIncrement) {
@@ -309,7 +309,7 @@ void **convertSequenceCoordinatesToConstraints(void **mergedSequenceCoordinates,
     int32_t *temp;
     void **mergedSequenceConstraints;
 
-    mergedSequenceConstraints = mallocLocal(sizeof(void *)*mergedSequenceCoordinateLength);
+    mergedSequenceConstraints = st_malloc(sizeof(void *)*mergedSequenceCoordinateLength);
 
     //for key in mergedSequenceCoordinates.keys():
     for(i=0; i<mergedSequenceCoordinateLength; i++) {
@@ -415,7 +415,7 @@ int32_t *calculateSilentVertices(struct SequenceGraph *sequenceGraph) {
     int32_t i;
     struct Edge *edge;
 
-    silentVertices = callocLocal(sequenceGraph->vertexNo, sizeof(int32_t));
+    silentVertices = st_calloc(sequenceGraph->vertexNo, sizeof(int32_t));
     //for vertex in xrange(0, sequenceGraph.vertexNo):
     for(vertex=0; vertex<sequenceGraph->vertexNo; vertex++) {
         //for edge in sequenceGraph.edgesArrangedByToVertex[vertex]:
@@ -433,7 +433,7 @@ int32_t *calculateSilentVertices(struct SequenceGraph *sequenceGraph) {
 //treeNodes
 struct TreeNode *copyConstructTreeNode(int32_t type, int32_t transitionID, struct TraversalID *traversalID,
                                    struct TreeNode *treeNodeX, struct TreeNode *treeNodeY, float *wV) {
-    struct TreeNode *treeNode = mallocLocal(sizeof(struct TreeNode));
+    struct TreeNode *treeNode = st_malloc(sizeof(struct TreeNode));
     treeNode->left = NULL;
     treeNode->refCount = 0;
 
@@ -449,7 +449,7 @@ struct TreeNode *copyConstructTreeNode(int32_t type, int32_t transitionID, struc
     if (treeNodeY != NULL) {
         treeNodeY->refCount++;
     }
-    treeNode->wV = wV ? memcpy(mallocLocal(ALPHABET_SIZE*sizeof(float)), wV, ALPHABET_SIZE*sizeof(float)) : NULL;
+    treeNode->wV = wV ? memcpy(st_malloc(ALPHABET_SIZE*sizeof(float)), wV, ALPHABET_SIZE*sizeof(float)) : NULL;
     return treeNode;
 }
 
@@ -480,13 +480,13 @@ struct Edge *copyConstructEdge(int32_t from, int32_t to, float edgeScore, float 
                                float *wV, int32_t silent, void *treeNode, int32_t iD) {
     struct Edge *temp;
     //INT_32 i;
-    temp = mallocLocal(sizeof(struct Edge));
+    temp = st_malloc(sizeof(struct Edge));
     temp->from = from;
     temp->to = to;
     temp->edgeScore = edgeScore;
     temp->subScore = subScore;
     //temp->wV = wV;
-    temp->wV = wV ? memcpy(mallocLocal(ALPHABET_SIZE*sizeof(float)), wV, ALPHABET_SIZE*sizeof(float)) : NULL;
+    temp->wV = wV ? memcpy(st_malloc(ALPHABET_SIZE*sizeof(float)), wV, ALPHABET_SIZE*sizeof(float)) : NULL;
     temp->silent = silent;
     temp->treeNode = treeNode;
     temp->iD = iD;
@@ -506,7 +506,7 @@ struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edg
 //struct TraceBackEdge *constructTraceBackEdge(LONG_64 from, LONG_64 to, FLOAT_32 edgeScore, struct Edge *edgeX, struct Edge *edgeY) {
     struct TraceBackEdge *temp;
 
-    temp = mallocLocal(sizeof(struct TraceBackEdge));
+    temp = st_malloc(sizeof(struct TraceBackEdge));
     temp->from = from;
     temp->to = to;
     temp->edgeScore = edgeScore;
@@ -586,12 +586,12 @@ struct SequenceGraph *constructSequenceGraph(struct List *edges, int32_t vertexN
     struct SequenceGraph *sequenceGraph;
     int32_t *counts;
 
-    sequenceGraph = mallocLocal(sizeof(struct SequenceGraph));
+    sequenceGraph = st_malloc(sizeof(struct SequenceGraph));
     sequenceGraph->edges = edges;
     sequenceGraph->vertexNo = vertexNo;
-    sequenceGraph->edgesArrangedByToVertex = mallocLocal(sizeof(struct List *)*vertexNo);
-    sequenceGraph->edgesArrangedByFromVertex = mallocLocal(sizeof(struct List *)*vertexNo);
-    counts = (int32_t *)mallocLocal(sizeof(int32_t)*vertexNo);
+    sequenceGraph->edgesArrangedByToVertex = st_malloc(sizeof(struct List *)*vertexNo);
+    sequenceGraph->edgesArrangedByFromVertex = st_malloc(sizeof(struct List *)*vertexNo);
+    counts = (int32_t *)st_malloc(sizeof(int32_t)*vertexNo);
     //tos
     for(i=0; i<vertexNo; i++) {
         counts[i] = 0;
@@ -690,7 +690,7 @@ int32_t *randomChoices(float *probs, int32_t sizeA, int32_t pathWeight) {
 
 struct GraphMemberHolder *constructGraphMember(void *graphMember, int32_t *sequenceConstraints, void (*destructGraphMember)(void *)) {
 	struct GraphMemberHolder *graphMemberHolder;
-    graphMemberHolder = mallocLocal(sizeof(struct GraphMemberHolder));
+    graphMemberHolder = st_malloc(sizeof(struct GraphMemberHolder));
 	graphMemberHolder->graphMember = graphMember;
 	graphMemberHolder->sequenceConstraints = sequenceConstraints;
     graphMemberHolder->destructGraphMember = destructGraphMember;
@@ -1423,10 +1423,10 @@ void computeMatrix(struct AlignmentDataStructures *aDS) {
     scratch = arrayResize(scratch, &scratchSize, aDS->sequenceGraphY->edges->length + 1, sizeof(void *)); //can't have duplicates loaded on, so okay
     scratch2 = arrayResize(scratch2, &scratchSize2, aDS->sequenceGraphY->edges->length + 1, sizeof(void *));
 
-    previousVertices = callocLocal(aDS->sequenceGraphX->vertexNo, sizeof(void *));
-    previousEdges = callocLocal(aDS->sequenceGraphX->vertexNo, sizeof(void *));
-    previousIllegalEdges = callocLocal(aDS->sequenceGraphX->vertexNo, sizeof(void *));
-    rightMostVertices = callocLocal(aDS->sequenceGraphX->vertexNo, sizeof(int32_t));
+    previousVertices = st_calloc(aDS->sequenceGraphX->vertexNo, sizeof(void *));
+    previousEdges = st_calloc(aDS->sequenceGraphX->vertexNo, sizeof(void *));
+    previousIllegalEdges = st_calloc(aDS->sequenceGraphX->vertexNo, sizeof(void *));
+    rightMostVertices = st_calloc(aDS->sequenceGraphX->vertexNo, sizeof(int32_t));
 
     //core structures computed during each loop
     copyList(aDS->mergedStartConstraints_Vertices[0], &newVertices);
@@ -1671,14 +1671,14 @@ void computeMatrix(struct AlignmentDataStructures *aDS) {
     j = 1;
     cell = getCell(aDS, v(aDS, aDS->sequenceGraphX->vertexNo-1, aDS->sequenceGraphY->vertexNo-1));
     if(cell != NULL) {
-        logDebug("End state probabilities ");
+        st_logDebug("End state probabilities ");
         for (i = 0; i < stateNo(); ++i) {
-            logDebug(" %f ", cell[i]);
+            st_logDebug(" %f ", cell[i]);
             if (cell[i] + aDS->endStates[i] > LOG_ZERO) {
                 j = 0;
             }
         }
-        logDebug("\n");
+        st_logDebug("\n");
     }
     else {
         fprintf(stderr, " No path through alignment possible, so I have no choice but to exit, sorry! \n");
@@ -1793,7 +1793,7 @@ int32_t **calculateVertexSequenceCoordinates(struct SequenceGraph *sequenceGraph
 
     //calculates the coordinates for each vertex of the sequences in the graph
     //sequence coordinates are respresented in arrays offset from left-most leaf no
-    sequenceCoordinates = mallocLocal(sizeof(int32_t *)*sequenceGraph->vertexNo); //{ 0:[-1]*leafSeqNo }
+    sequenceCoordinates = st_malloc(sizeof(int32_t *)*sequenceGraph->vertexNo); //{ 0:[-1]*leafSeqNo }
     sequenceCoordinates[0] = mallocChunk(chunks); //callocLocal(leafSeqNo, sizeof(INT_32));
     memset(sequenceCoordinates[0], 0, sizeof(int32_t) * leafSeqNo);
     for(vertex=1; vertex<sequenceGraph->vertexNo; vertex++) { // in xrange(1, sequenceGraph.vertexNo):
@@ -1861,7 +1861,7 @@ struct SequenceGraph *compactSilentVertices(struct SequenceGraph *sequenceGraph)
     int32_t i;
     struct SequenceGraph *finalSequenceGraph;
 
-    verticeShifts = callocLocal(sequenceGraph->vertexNo, sizeof(int32_t));
+    verticeShifts = st_calloc(sequenceGraph->vertexNo, sizeof(int32_t));
     newEdges = sequenceGraph->edges;
     newEdges->length = 0;
     for(vertex=0; vertex <sequenceGraph->vertexNo; vertex++) {
@@ -1950,9 +1950,9 @@ struct SequenceGraph* convertTraceBackEdgesToSequenceGraph(struct AlignmentDataS
     }
     i = hashtable_count(vertexMap);
     finalSequenceGraph = constructSequenceGraph(copyConstructList((void **)newEdges, newEdgeNumber, (void (*)(void *))destructEdge), i);
-    logDebug("Total number of edges and vertices (without compaction) : " INT_STRING " , " INT_STRING " \n", finalSequenceGraph->edges->length, finalSequenceGraph->vertexNo);
+    st_logDebug("Total number of edges and vertices (without compaction) : " INT_STRING " , " INT_STRING " \n", finalSequenceGraph->edges->length, finalSequenceGraph->vertexNo);
     finalSequenceGraph = compactSilentVertices(finalSequenceGraph);
-    logDebug("Total number of edges and vertices (after compaction) : " INT_STRING " , " INT_STRING " \n", finalSequenceGraph->edges->length, finalSequenceGraph->vertexNo);
+    st_logDebug("Total number of edges and vertices (after compaction) : " INT_STRING " , " INT_STRING " \n", finalSequenceGraph->edges->length, finalSequenceGraph->vertexNo);
     //memory clean up
     hashtable_destroy(vertexMap, FALSE, FALSE);
     destructChunks(intChunks);
@@ -2001,7 +2001,7 @@ struct SequenceGraph *traceBackMatrix(struct AlignmentDataStructures *aDS) {
     terminationVertex = finalVertex + 100*stateNo(); //vZ(aDS, aDS->sequenceGraphX->vertexNo-1, aDS->sequenceGraphY->vertexNo-1, 0); //starting vertices
     //special vertex used for creating extra vertices for double-deletes
     finalVertices = getCell(aDS, rVZ_Zless(aDS, finalVertex));
-    endProbs = mallocLocal(sizeof(float)*stateNo());
+    endProbs = st_malloc(sizeof(float)*stateNo());
     for (state = 0; state < stateNo(); ++state) {
         endProbs[state] = finalVertices[state] + aDS->endStates[state];
     }
@@ -2323,10 +2323,10 @@ struct SequenceGraph *computeEdgeGraph(struct SequenceGraph *sequenceGraphX, str
     struct SequenceGraph *newSequenceGraph;
     struct AlignmentDataStructures *aDS;
     //computes a specified number of sample alignments using the forward algorithm
-    logDebug("Number of edgesX: " INT_STRING " Number of edgesY: " INT_STRING " Number of verticesX: " INT_STRING " Number of verticesY: " INT_STRING "\n",
+    st_logDebug("Number of edgesX: " INT_STRING " Number of edgesY: " INT_STRING " Number of verticesX: " INT_STRING " Number of verticesY: " INT_STRING "\n",
            sequenceGraphX->edges->length, sequenceGraphY->edges->length, sequenceGraphX->vertexNo, sequenceGraphY->vertexNo);
 
-    aDS = mallocLocal(sizeof(struct AlignmentDataStructures));
+    aDS = st_malloc(sizeof(struct AlignmentDataStructures));
 
     aDS->sequenceGraphX = sequenceGraphX;
     aDS->sequenceGraphY = sequenceGraphY;
@@ -2397,9 +2397,9 @@ struct SequenceGraph *computeEdgeGraph(struct SequenceGraph *sequenceGraphX, str
 
     //used in scanning
     aDS->newVertices_Size = MEDIUM_CHUNK_SIZE;
-    aDS->newVertices = mallocLocal(sizeof(int32_t) * aDS->newVertices_Size);
+    aDS->newVertices = st_malloc(sizeof(int32_t) * aDS->newVertices_Size);
     aDS->noOfNewVertices = 0;
-    aDS->changes = mallocLocal(sizeof(int32_t) * leafSeqNoX * 2);
+    aDS->changes = st_malloc(sizeof(int32_t) * leafSeqNoX * 2);
     aDS->noOfChanges = 0;
     aDS->sequenceCoordinatesCollection = NULL;
     aDS->mergedEndConstraints_GraphMembers = NULL;
@@ -2414,8 +2414,8 @@ struct SequenceGraph *computeEdgeGraph(struct SequenceGraph *sequenceGraphX, str
     //aDS->potentialEdges;
     //aDS->potentialEdgeCosts;
     aDS->potentialEdges_Size = MEDIUM_CHUNK_SIZE;
-    aDS->potentialEdges = mallocLocal(sizeof(void *)*aDS->potentialEdges_Size);
-    aDS->potentialEdgeCosts = mallocLocal(sizeof(float)*aDS->potentialEdges_Size);
+    aDS->potentialEdges = st_malloc(sizeof(void *)*aDS->potentialEdges_Size);
+    aDS->potentialEdgeCosts = st_malloc(sizeof(float)*aDS->potentialEdges_Size);
     aDS->potentialEdges_Index = 0;
     //branches for composing tree, used in traceback
     aDS->deleteNodeX = copyConstructTreeNode(TREE_NODE_DELETE, INT32_MAX, traversalIDX, NULL, NULL, NULL);
@@ -2491,12 +2491,12 @@ struct List *viterbi(struct SequenceGraph *sequenceGraph, float *finalScore) {
     int32_t vertex;
     struct List *list;
 
-    viterbiMatrix = mallocLocal(sizeof(float)*sequenceGraph->vertexNo);
+    viterbiMatrix = st_malloc(sizeof(float)*sequenceGraph->vertexNo);
     for(i=0; i<sequenceGraph->vertexNo; i++) {
         viterbiMatrix[i] = LOG_ZERO;
     }
-    pointers = callocLocal(sequenceGraph->vertexNo, sizeof(void *));
-    alignment = mallocLocal(sizeof(void *)*sequenceGraph->vertexNo);
+    pointers = st_calloc(sequenceGraph->vertexNo, sizeof(void *));
+    alignment = st_malloc(sizeof(void *)*sequenceGraph->vertexNo);
 
     //zero is terminator
     pointers[0] = 0;
@@ -2548,7 +2548,7 @@ float *calcForwardMatrix(struct SequenceGraph *sequenceGraph) {
     float *forwardMatrix;
     struct Edge *edge;
 
-    forwardMatrix = mallocLocal(sequenceGraph->vertexNo*sizeof(float));
+    forwardMatrix = st_malloc(sequenceGraph->vertexNo*sizeof(float));
     for(i=0; i<sequenceGraph->vertexNo; i++) {
         forwardMatrix[i] = LOG_ZERO;
     }
@@ -2572,7 +2572,7 @@ float *calcBackwardMatrix(struct SequenceGraph *sequenceGraph) {
     float *backwardMatrix;
     struct Edge *edge;
 
-    backwardMatrix = mallocLocal(sequenceGraph->vertexNo*sizeof(float));
+    backwardMatrix = st_malloc(sequenceGraph->vertexNo*sizeof(float));
     for(i=0; i<sequenceGraph->vertexNo; i++) {
         backwardMatrix[i] = LOG_ZERO;
     }
@@ -2600,7 +2600,7 @@ float *posteriorProbabilities(float *forwardMatrix, float *backwardMatrix, struc
     total = forwardMatrix[sequenceGraph->vertexNo-1];
     assert(total <= backwardMatrix[0] + 0.00001);
     assert(total >= backwardMatrix[0] - 0.00001);
-    edgeProbs = mallocLocal(sequenceGraph->edges->length*sizeof(float));
+    edgeProbs = st_malloc(sequenceGraph->edges->length*sizeof(float));
     for(i=0; i<sequenceGraph->edges->length; i++) {
     //for(edge in sequenceGraph.edges) {
         edge = sequenceGraph->edges->list[i];
@@ -2741,8 +2741,8 @@ float *felsensteins(struct TreeNode *treeNode, struct SubModel **subModels, int3
     i = nodeNumber*alphabetSize;
 
     working = arrayResize(working, &workSize, i*3, sizeof(float));
-    results = mallocLocal(sizeof(float)*i);
-    totalP = mallocLocal(sizeof(float)*nodeNumber);
+    results = st_malloc(sizeof(float)*i);
+    totalP = st_malloc(sizeof(float)*nodeNumber);
     for(j=0; j<i; j++) { //this is 'gap value'
         results[j] = -1.0f;
     }
@@ -2806,7 +2806,7 @@ struct SequenceGraph *align_BottomUpScript(struct BinaryTree *binaryTree, struct
 
     traversalID = binaryTree->traversalID;
     nodeName = nodeNames[traversalID->mid];
-    logInfo("Starting recursion to create node : %s \n", nodeName);
+    st_logInfo("Starting recursion to create node : %s \n", nodeName);
     if (binaryTree->internal) {
         binaryTreeX = binaryTree->left;
         traversalIDX = binaryTreeX->traversalID;
@@ -2828,11 +2828,11 @@ struct SequenceGraph *align_BottomUpScript(struct BinaryTree *binaryTree, struct
         combinedTransitionModels, numberOfSamples, leftMostSeqNo + leafSeqNoX, leafNo, treeStates);
         leafSeqNoY = *leafNo - leafSeqNoY;
 
-        logInfo("Node %s is internal \n", nodeName);
-        logInfo("Child x sequence : %s \n", nodeNames[traversalIDX->mid]);
-        logInfo("X branch has length %f \n", binaryTreeX->distance);
-        logInfo("Child y sequence : %s \n", nodeNames[traversalIDY->mid]);
-        logInfo("Y branch has length %f \n", binaryTreeY->distance);
+        st_logInfo("Node %s is internal \n", nodeName);
+        st_logInfo("Child x sequence : %s \n", nodeNames[traversalIDX->mid]);
+        st_logInfo("X branch has length %f \n", binaryTreeX->distance);
+        st_logInfo("Child y sequence : %s \n", nodeNames[traversalIDY->mid]);
+        st_logInfo("Y branch has length %f \n", binaryTreeY->distance);
         combinedTransitionModel = combinedTransitionModels[traversalID->mid];
         sequenceGraph = computeEdgeGraph(sequenceGraphX, sequenceGraphY,
                                         combinedTransitionModel, constraints, //subModels,
@@ -2845,7 +2845,7 @@ struct SequenceGraph *align_BottomUpScript(struct BinaryTree *binaryTree, struct
         //end clean up
         return sequenceGraph;
     }
-    logInfo("Node %s is a leaf sequence \n", nodeName);
+    st_logInfo("Node %s is a leaf sequence \n", nodeName);
     //sequenceGraph = convertSeqToSeqGraph(seqsIt.next(), traversalIDs[binaryTree])
     return sequenceGraphs[(*leafNo)++];
 }

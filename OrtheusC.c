@@ -54,7 +54,7 @@ struct TreeNodeHolder {
 struct TreeNodeHolder *constructTreeNodeHolder(struct TreeNode *treeNode, struct Edge *edge) {
 	struct TreeNodeHolder *treeNodeHolder;
 
-	treeNodeHolder = mallocLocal(sizeof(struct TreeNodeHolder));
+	treeNodeHolder = st_malloc(sizeof(struct TreeNodeHolder));
 	treeNodeHolder->treeNode = treeNode;
 	treeNodeHolder->edge = edge;
 	return treeNodeHolder;
@@ -70,7 +70,7 @@ float *convertToWVSeq(char *seq, int32_t length, float *(*map)(char i)) {
     float *wV;
     float *seqWV;
 
-    seqWV = mallocLocal(sizeof(float)*length*ALPHABET_SIZE);
+    seqWV = st_malloc(sizeof(float)*length*ALPHABET_SIZE);
     for(i=0; i<length; i++) {
         wV = map(seq[i]);
         memcpy(seqWV + ALPHABET_SIZE*i, wV, ALPHABET_SIZE*sizeof(float));
@@ -255,7 +255,7 @@ char *treeNodeNames(struct BinaryTree *binaryTree, char **labels, char **leafLab
     if(binaryTree->internal) {
         i = treeNodeNames(binaryTree->left, labels, leafLabels);
         j = treeNodeNames(binaryTree->right, labels, leafLabels);
-        k = mallocLocal(sizeof(char) * (strlen(i) + strlen(j) + 2));
+        k = st_malloc(sizeof(char) * (strlen(i) + strlen(j) + 2));
         return labels[binaryTree->traversalID->mid] = strcat(strcat(strcpy(k, i), "_"), j);
     }
     else {
@@ -273,7 +273,7 @@ struct Constraints ***buildPrimeConstraints(char *alignmentFile, int32_t seqNo, 
     struct List *fastaNames;
 
     //constraints from previously constructed alignment
-    logInfo("Alignment file : %s\n", alignmentFile);
+    st_logInfo("Alignment file : %s\n", alignmentFile);
     if (alignmentFile != NULL) {
         alignmentSeqs = constructEmptyList(0, free);
         alignmentSeqLengths = constructEmptyList(0, free);
@@ -294,8 +294,8 @@ struct Constraints ***buildPrimeConstraints(char *alignmentFile, int32_t seqNo, 
     else {
         primeConstraints = buildAllConstraints_FromAlignment(NULL, INT32_MIN, seqNo, (int32_t *)seqLengths, CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE, '-', binaryTree, TOTAL_CONSTRAINTS);
     }
-    logInfo("Finished parsing alignment file\n");
-    logInfo("Built constraints lists\n");
+    st_logInfo("Finished parsing alignment file\n");
+    st_logInfo("Built constraints lists\n");
     return primeConstraints;
 }
 
@@ -311,13 +311,13 @@ struct List *parseSequences(char **argv, int32_t inputSequenceNumber, int32_t *s
     seqs = constructEmptyList(0, free);
     fastaNames = constructEmptyList(0, free);
     for(i=0; i<inputSequenceNumber; i++) {
-        logInfo("Sequence file : %s\n", argv[i]);
+        st_logInfo("Sequence file : %s\n", argv[i]);
         fastaStream = fopen(argv[i], "r");
         fastaRead(fastaStream, seqs, seqLengths, fastaNames);
         fclose(fastaStream);
     }
     *seqNo = seqs->length;
-    *seqLengthsA = mallocLocal(sizeof(int32_t)*(*seqNo));
+    *seqLengthsA = st_malloc(sizeof(int32_t)*(*seqNo));
     for(i=0; i<*seqNo; i++) {
         (*seqLengthsA)[i] = *((int32_t *)seqLengths->list[i]);
     }
@@ -333,7 +333,7 @@ struct SequenceGraph **buildLeafSequenceGraphs(struct List *seqs, int32_t seqNo,
     float *wV;
     struct SequenceGraph **inputSequenceGraphs;
 
-    inputSequenceGraphs = mallocLocal(sizeof(void *)*seqNo);
+    inputSequenceGraphs = st_malloc(sizeof(void *)*seqNo);
     i=0;
     for(j=0; j<nodeNumber; j++) {
         if(!binaryTreeNodes[j]->internal) {
@@ -361,10 +361,10 @@ char *calculateRepeatBases(char **leafSeqs, float **columnAlignment, int32_t seq
     float *column;
 
     i = sizeof(int32_t)*seqNo;
-    indices = mallocLocal(i);
+    indices = st_malloc(i);
     memset(indices, 0, i);
     i = sizeof(char)*nodeNo*alignmentLength;
-    repeatBases = mallocLocal(i);
+    repeatBases = st_malloc(i);
     memset(repeatBases, 0, i);
 
     k=0;
@@ -583,10 +583,10 @@ int main(int argc, char *argv[]) {
                 OUTPUT_ALIGNMENT_FILE = argv[++i];
                 break;
             case 'e':
-                setLogLevel(LOGGING_DEBUG);
+                st_setLogLevel(ST_LOGGING_DEBUG);
                 break;
             case 'f':
-                setLogLevel(LOGGING_INFO);
+                st_setLogLevel(ST_LOGGING_INFO);
                 break;
             case 'g':
                 WRITE_MFA_ALIGNMENT = FALSE;
@@ -629,35 +629,35 @@ int main(int argc, char *argv[]) {
     parameterStruct = constructParamStruct(argc, argv);
 
     for(i=0; i<argc; i++) {
-        logInfo("Argument recieved, no : " INT_STRING ", value : %s\n", i, argv[i]);
+        st_logInfo("Argument recieved, no : " INT_STRING ", value : %s\n", i, argv[i]);
     }
-    logInfo("Program seeded with time %i ", seedTime);
+    st_logInfo("Program seeded with time %i ", seedTime);
     srand(seedTime);
 
-    logInfo("Anti diagonal relax value " INT_STRING " \n", CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE);
-    logInfo("Number of samples " INT_STRING " \n", NUMBER_OF_SAMPLES);
+    st_logInfo("Anti diagonal relax value " INT_STRING " \n", CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE);
+    st_logInfo("Number of samples " INT_STRING " \n", NUMBER_OF_SAMPLES);
 
     //tree stuff
-    logInfo("Newick-Tree : %s\n", newickTreeString);
+    st_logInfo("Newick-Tree : %s\n", newickTreeString);
     newickTree = newickTreeParser(newickTreeString, DEFAULT_BINARY_TREE_DISTANCE, 0);
     newickTreeLeafStrings = binaryTree_getOrderedLeafStrings(newickTree);
     binaryTree_depthFirstNumbers(newickTree);
-    logDebug("Parsed tree\n");
+    st_logDebug("Parsed tree\n");
     nodeNumber = newickTree->traversalID->midEnd;
-    newickTreeStrings = mallocLocal(sizeof(void *)*nodeNumber);
+    newickTreeStrings = st_malloc(sizeof(void *)*nodeNumber);
     treeNodeNames(newickTree, newickTreeStrings, (char **)newickTreeLeafStrings->list);
-    binaryTreeNodes = mallocLocal(sizeof(void *)*nodeNumber);
-    subModels = mallocLocal(sizeof(void *)*nodeNumber);
+    binaryTreeNodes = st_malloc(sizeof(void *)*nodeNumber);
+    subModels = st_malloc(sizeof(void *)*nodeNumber);
     getBinaryTreeNodesInMidOrder(newickTree, binaryTreeNodes);
-    if(LOG_LEVEL == LOGGING_DEBUG) {
+    if(st_getLogLevel() == ST_LOGGING_DEBUG) {
         printBinaryTree(stderr, newickTree);
     }
-    logInfo("Newick-Tree seems okay\n");
+    st_logInfo("Newick-Tree seems okay\n");
     //parse sequences
     seqs = parseSequences(inputSequences, inputSequenceNumber, &seqNo, &seqLengths);
-    combinedTransitionModels = mallocLocal(sizeof(void *)*nodeNumber);
+    combinedTransitionModels = st_malloc(sizeof(void *)*nodeNumber);
     for(i=0; i<nodeNumber; i++) {
-        logInfo("Newick-Tree node names : %s\n", newickTreeStrings[i]);
+        st_logInfo("Newick-Tree node names : %s\n", newickTreeStrings[i]);
         binaryTreeNode = binaryTreeNodes[i];
         if(binaryTreeNode->internal) {
             combinedTransitionModels[i] = constructCombinedTransitionModel(
@@ -674,20 +674,20 @@ int main(int argc, char *argv[]) {
     inputSequenceGraphs = buildLeafSequenceGraphs(seqs, seqNo, seqLengths, nodeNumber, binaryTreeNodes);
 
     assert(1 + nodeNumber/2  == seqNo);
-    logInfo("Sequence number tallies with tree : " INT_STRING "\n", seqNo);
+    st_logInfo("Sequence number tallies with tree : " INT_STRING "\n", seqNo);
     for(i=0; i<seqNo; i++) {
-        logInfo("Sequence lengths : " INT_STRING " : %s \n", seqLengths[i], newickTreeLeafStrings->list[i]);
+        st_logInfo("Sequence lengths : " INT_STRING " : %s \n", seqLengths[i], newickTreeLeafStrings->list[i]);
     }
     //get prime constraints
     primeConstraints = buildPrimeConstraints(constraintAlignmentFile, seqNo, seqLengths, newickTree);
     //do input tree states
     if(TREE_STATES_INPUT_FILE != NULL) {
-        treeStates = mallocLocal(sizeof(int32_t)*nodeNumber);
+        treeStates = st_malloc(sizeof(int32_t)*nodeNumber);
         treeStatesFile = fopen(TREE_STATES_INPUT_FILE, "r");
         readIntegers(treeStatesFile, nodeNumber, treeStates);
         fclose(treeStatesFile);
         for(i=0; i<nodeNumber; i++) {
-            logInfo("Tree states read : " INT_STRING " \n", treeStates[i]);
+            st_logInfo("Tree states read : " INT_STRING " \n", treeStates[i]);
         }
     }
     else {
@@ -701,14 +701,14 @@ int main(int argc, char *argv[]) {
                          newickTreeStrings, //subModels,
                          combinedTransitionModels,
                          NUMBER_OF_SAMPLES, 0, &i, treeStates);
-    logInfo("Alignment graph computed\n");
+    st_logInfo("Alignment graph computed\n");
     alignment = viterbi(sequenceGraph, &totalScore);
-    logInfo("Computed viterbi alignment\n");
+    st_logInfo("Computed viterbi alignment\n");
     linearAlignment = lineariseAlignment(alignment);
-    logInfo("Mapped alignment data-structure to columns for output \n");
+    st_logInfo("Mapped alignment data-structure to columns for output \n");
     shrinkAlignment(linearAlignment, VITERBI_COLUMN_GAP);
     wvAlignment = convertAlignmentToColumns(linearAlignment, nodeNumber, subModels, ancestorProbs);
-    logInfo("Created bases for alignment\n");
+    st_logInfo("Created bases for alignment\n");
     repeatBases = calculateRepeatBases((char **)seqs->list, (float **)wvAlignment->list, seqNo, wvAlignment->length);
     if(WRITE_MFA_ALIGNMENT) {
         if(OUTPUT_ALIGNMENT_FILE != NULL) {
@@ -722,7 +722,7 @@ int main(int argc, char *argv[]) {
     }
     if(TREE_STATES_OUTPUT_FILE != NULL) {
         if(treeStates == NULL) {
-            treeStates = mallocLocal(sizeof(int32_t)*nodeNumber);
+            treeStates = st_malloc(sizeof(int32_t)*nodeNumber);
             memset(treeStates, 0, sizeof(int32_t)*nodeNumber); //assumes start state is 0 (but then you won't get much using this with zero length alignments!)
         }
         calculateTreeStates(linearAlignment, nodeNumber, treeStates);
@@ -735,7 +735,7 @@ int main(int argc, char *argv[]) {
             }
         }
         for(i=0; i<nodeNumber; i++) {
-            logInfo("Tree states to write : " INT_STRING " \n", treeStates[i]);
+            st_logInfo("Tree states to write : " INT_STRING " \n", treeStates[i]);
         }
         treeStatesFile = fopen(TREE_STATES_OUTPUT_FILE, "w");
         writeIntegers(treeStatesFile, nodeNumber, treeStates);
@@ -790,7 +790,7 @@ int main(int argc, char *argv[]) {
     free(repeatBases);
     //end memory clean up
     //extern INT_32 heapCounter;
-    logInfo("Finished, total time taken : %f (seconds) \n", ((clock() + 0.0f)/CLOCKS_PER_SEC + 0.0f));
+    st_logInfo("Finished, total time taken : %f (seconds) \n", ((clock() + 0.0f)/CLOCKS_PER_SEC + 0.0f));
 
     if(SCORE_OUTPUT_FILE != NULL) {
         scoreOutputFile = fopen(SCORE_OUTPUT_FILE, "w");

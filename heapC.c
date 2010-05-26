@@ -37,13 +37,13 @@ struct heap *heap_create(uint32_t max_entries)
     struct heap *heap;
 	uint32_t i;
     
-    heap = (struct heap *) mallocLocal(sizeof(struct heap));
+    heap = (struct heap *) st_malloc(sizeof(struct heap));
 	if (!heap)
 		return 0;
 	memset(heap, 0, sizeof(struct heap));
 	heap->max_entries = max_entries;
 	heap->num_entries = 0;
-	heap->entries = (int64_t *) mallocLocal(sizeof(int64_t) * max_entries);
+	heap->entries = (int64_t *) st_malloc(sizeof(int64_t) * max_entries);
 	if (!heap->entries) {
 		free(heap);
 		assert(0);

@@ -28,11 +28,11 @@
 
 struct Constraints *constructConstraintsBackward() {
     struct Constraints *constraints;
-    constraints = mallocLocal(sizeof(struct Constraints));
+    constraints = st_malloc(sizeof(struct Constraints));
     assert(CONSTRAINT_BASE_SIZE >= 2);
-    constraints->xList = mallocLocal(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
-    constraints->yList = mallocLocal(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
-    constraints->constraintsList = mallocLocal(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
+    constraints->xList = st_malloc(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
+    constraints->yList = st_malloc(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
+    constraints->constraintsList = st_malloc(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
     constraints->maxLength = CONSTRAINT_BASE_SIZE;
     constraints->length = 2;
 
@@ -69,15 +69,15 @@ void appendConstraintBackwards(struct Constraints *constraints, int32_t x, int32
 
         newSize = 2*(constraints->maxLength);
 
-        new = memcpy(mallocLocal(sizeof(int32_t)*newSize), constraints->xList, sizeof(int32_t)*(constraints->maxLength));
+        new = memcpy(st_malloc(sizeof(int32_t)*newSize), constraints->xList, sizeof(int32_t)*(constraints->maxLength));
         free(constraints->xList);
         constraints->xList = new;
 
-        new = memcpy(mallocLocal(sizeof(int32_t)*newSize), constraints->yList, sizeof(int32_t)*(constraints->maxLength));
+        new = memcpy(st_malloc(sizeof(int32_t)*newSize), constraints->yList, sizeof(int32_t)*(constraints->maxLength));
         free(constraints->yList);
         constraints->yList = new;
 
-        new = memcpy(mallocLocal(sizeof(int32_t)*newSize), constraints->constraintsList, sizeof(int32_t)*(constraints->maxLength));
+        new = memcpy(st_malloc(sizeof(int32_t)*newSize), constraints->constraintsList, sizeof(int32_t)*(constraints->maxLength));
         free(constraints->constraintsList);
         constraints->constraintsList = new;
 
@@ -172,7 +172,7 @@ struct hashtable **getEmptyConstraints(const int32_t seqNo, const int32_t bounda
     int32_t i;
     struct hashtable **tables;
 
-    tables = mallocLocal(sizeof(struct hashtable *)*seqNo*seqNo);
+    tables = st_malloc(sizeof(struct hashtable *)*seqNo*seqNo);
     for(i=0; i<seqNo*seqNo; i++) {
         tables[i] = create_hashtable(CONSTRAINT_HASHTABLE_BASE_SIZE, hashtable_intHashKey, hashtable_intEqualKey, (void (*)(void *))destructInt, (void (*)(void *))destructInt);
     }
@@ -284,12 +284,12 @@ struct hashtable **convertAlignmentToInputConstraints(char **alignment, int32_t 
     int32_t *list2;
 
     constraints = getEmptyConstraints(seqNo, TRUE, intChunks);
-    indices = mallocLocal(sizeof(int32_t)*seqNo); //[0]*seqNo
+    indices = st_malloc(sizeof(int32_t)*seqNo); //[0]*seqNo
     for(i=0; i<seqNo; i++) {
         indices[i] = 0;
     }
-    list = mallocLocal(sizeof(int32_t)*seqNo);
-    list2 = mallocLocal(sizeof(int32_t)*seqNo);
+    list = st_malloc(sizeof(int32_t)*seqNo);
+    list2 = st_malloc(sizeof(int32_t)*seqNo);
     //while((column = alignment()) != NULL) {
     for(i=0; i<alignmentLength; i++) {
         j=0;
@@ -490,7 +490,7 @@ struct hashtable **convertAlignmentToPhylogeneticInputConstraints(char **alignme
 
     //reads in a given alignment and converts it to a map of constraints
     constraints =  getEmptyConstraints(seqNo, TRUE, intChunks);
-    indices = callocLocal(seqNo, sizeof(int32_t)); //[0]*seqNo
+    indices = st_calloc(seqNo, sizeof(int32_t)); //[0]*seqNo
 
     for(i=0; i<alignmentLength; i++) {
         for(j=0; j<seqNo; j++) {
@@ -628,27 +628,27 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
     seqNo = seqNoA;
     seqLengths = seqLengthsA;
 
-    primeConstraints = mallocLocal(sizeof(void *)*seqNo); ///[ [] for i in xrange(0, seqNo) ]
+    primeConstraints = st_malloc(sizeof(void *)*seqNo); ///[ [] for i in xrange(0, seqNo) ]
     for(i=0; i<seqNo; i++) {
         primeConstraints[i] = constructConstraintsBackward();
     }
 
-    prime = mallocLocal(sizeof(int32_t)*seqNo); //[sys.maxint]*seqNo
+    prime = st_malloc(sizeof(int32_t)*seqNo); //[sys.maxint]*seqNo
     for(i=0; i<seqNo; i++) {
         prime[i] = INT32_MAX;
     }
 
-    constraintType = mallocLocal(sizeof(int32_t)*seqNo); //[CONSTRAINT_UNDECIDED]*seqNo
+    constraintType = st_malloc(sizeof(int32_t)*seqNo); //[CONSTRAINT_UNDECIDED]*seqNo
     for(i=0; i<seqNo; i++) {
         constraintType[i] = CONSTRAINT_UNDECIDED;
     }
 
-    list = mallocLocal(sizeof(int32_t)*seqNo); //[]
+    list = st_malloc(sizeof(int32_t)*seqNo); //[]
 
-    vertices = mallocLocal(sizeof(int32_t *)*seqNo);
+    vertices = st_malloc(sizeof(int32_t *)*seqNo);
     for(i=0; i<seqNo; i++) {
         k = seqLengths[i];
-        temp = mallocLocal(sizeof(int32_t)*k);
+        temp = st_malloc(sizeof(int32_t)*k);
         vertices[i] = temp;
         for(j=0; j<k; j++) {
             temp[j] = CONSTRAINT_UNDECIDED;
@@ -656,7 +656,7 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
     }
 
     stackMaxLength = STACK_BASE_SIZE;
-    stack = mallocLocal(sizeof(int32_t)*stackMaxLength);
+    stack = st_malloc(sizeof(int32_t)*stackMaxLength);
     stackLength = 0;
     //vertices = [ [ CONSTRAINT_UNDECIDED for pos in xrange(0, seqLengths[seq])]
     //            for seq in xrange(0, seqNo) ]
@@ -714,11 +714,11 @@ struct Constraints ***buildAllConstraints_StartFromMinusOne(struct hashtable **l
     struct Constraints ***primeConstraintsMatrix;
     struct Constraints *primeConstraints;
 
-    temp = mallocLocal(sizeof(int32_t)*seqNo);
+    temp = st_malloc(sizeof(int32_t)*seqNo);
     for(i=0; i<seqNo; i++) {
         temp[i] = seqLengths[i]+2;
     }
-    primeConstraintsMatrix = mallocLocal(sizeof(void *)*seqNo);
+    primeConstraintsMatrix = st_malloc(sizeof(void *)*seqNo);
     for(i=0; i<seqNo; i++) {
         primeConstraintsMatrix[i] = buildConstraints(lessThanConstraints, lessThanOrEqualConstraints, i, seqNo, temp);
     }
