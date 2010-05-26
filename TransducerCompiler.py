@@ -223,7 +223,7 @@ class HKYSubModel:
         outputFile.write("\t\t%f, %f,\n" % (self.EXPECTED_FREQUENCY_A, self.EXPECTED_FREQUENCY_C))
         outputFile.write("\t\t%f, %f,\n" % (self.EXPECTED_FREQUENCY_G, self.EXPECTED_FREQUENCY_T))
         outputFile.write("\t\t%f);\n\n" % (self.TRANSITION_TRANSVERSION_RATIO))
-        outputFile.write("\ttemp->ancestorProbs = mallocLocal(sizeof(float)*ALPHABET_SIZE);\n")
+        outputFile.write("\ttemp->ancestorProbs = st_malloc(sizeof(float)*ALPHABET_SIZE);\n")
         outputFile.write("\ttemp->ancestorProbs[0] = %f;\n" % self.EXPECTED_FREQUENCY_A) 
         outputFile.write("\ttemp->ancestorProbs[1] = %f;\n" % self.EXPECTED_FREQUENCY_C) 
         outputFile.write("\ttemp->ancestorProbs[2] = %f;\n" % self.EXPECTED_FREQUENCY_G) 
@@ -237,7 +237,10 @@ def writeHModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     #Write header lines
     outputFile.write("#ifndef XYZMODELC_H_\n")
     outputFile.write("#define XYZMODELC_H_\n\n")
-    outputFile.write('#include "fastCMaths.h"\n')
+    
+    outputFile.write('#include <inttypes.h>\n')
+    outputFile.write('#include "sonLib.h"\n')
+    
      
     #Number of states
     outputFile.write("struct CombinedTransitionModel {\n")
@@ -281,7 +284,8 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     #Write header lines
     outputFile.write("#include <stdio.h>\n")
     outputFile.write("#include <assert.h>\n")
-    outputFile.write('#include "fastCMaths.h"\n')
+    outputFile.write('#include <inttypes.h>\n')
+    outputFile.write('#include "sonLib.h"\n')
     outputFile.write('#include "substitutionC.h"\n')
     outputFile.write('#include "sequenceGraphC.h"\n')
     outputFile.write('#include "xyzModelC.h"\n\n')
@@ -311,13 +315,13 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
         outputFile.write("\treturn FALSE; \n}\n\n")
     
     outputFile.write("struct CombinedTransitionModel *constructCombinedTransitionModel(float DX, float DZ, int32_t includeRoot, struct ParameterStruct *pS) {\n") 
-    outputFile.write("\tstruct CombinedTransitionModel *temp = mallocLocal(sizeof(struct CombinedTransitionModel));\n\n")
+    outputFile.write("\tstruct CombinedTransitionModel *temp = st_malloc(sizeof(struct CombinedTransitionModel));\n\n")
     
-    outputFile.write('\tlogInfo("Building combined transition model, DX: %%f, DY %%f\\n", DX, DZ);\n')
+    outputFile.write('\tst_logInfo("Building combined transition model, DX: %%f, DY %%f\\n", DX, DZ);\n')
     
     #Are we including the root in these probs.
     outputFile.write("\ttemp->includeRoot = includeRoot;\n")
-    outputFile.write('\tlogInfo("Is root? " INT_STRING " \\n", temp->includeRoot);\n')
+    outputFile.write('\tst_logInfo("Is root? " INT_STRING " \\n", temp->includeRoot);\n')
     
     #Write out submodel
     subModel.writeCFile(outputFile)
@@ -326,25 +330,25 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     outputFile.write('\tint32_t i;\n\tint32_t j;\n')
     
     outputFile.write('\tfor(i=0; i<ALPHABET_SIZE; i++) {\n')
-    outputFile.write('\t\tlogInfo("Stationary frequency %i value %%f \\n", i, temp->subModelX->stationaryDistribution[i]);\n\t}\n')
+    outputFile.write('\t\tst_logInfo("Stationary frequency %i value %%f \\n", i, temp->subModelX->stationaryDistribution[i]);\n\t}\n')
     
     outputFile.write('\tfor(i=0; i<ALPHABET_SIZE; i++) {\n')
     outputFile.write('\t\tfor(j=0; j<ALPHABET_SIZE; j++) {\n')
-    outputFile.write('\t\t\tlogInfo("Substitition probability (X Branch) %i %i, forward value %%f, backward value %%f\\n", i, j, temp->subModelX->forward[i*ALPHABET_SIZE + j], temp->subModelX->backward[i*ALPHABET_SIZE + j]);\n\t\t}\n\t}\n')
+    outputFile.write('\t\t\tst_logInfo("Substitition probability (X Branch) %i %i, forward value %%f, backward value %%f\\n", i, j, temp->subModelX->forward[i*ALPHABET_SIZE + j], temp->subModelX->backward[i*ALPHABET_SIZE + j]);\n\t\t}\n\t}\n')
     
     outputFile.write('\tfor(i=0; i<ALPHABET_SIZE; i++) {\n')
     outputFile.write('\t\tfor(j=0; j<ALPHABET_SIZE; j++) {\n')
-    outputFile.write('\t\t\tlogInfo("Substitition probability (Z Branch) %i %i, forward value %%f, backward value %%f\\n", i, j, temp->subModelY->forward[i*ALPHABET_SIZE + j], temp->subModelY->backward[i*ALPHABET_SIZE + j]);\n\t\t}\n\t}\n')
+    outputFile.write('\t\t\tst_logInfo("Substitition probability (Z Branch) %i %i, forward value %%f, backward value %%f\\n", i, j, temp->subModelY->forward[i*ALPHABET_SIZE + j], temp->subModelY->backward[i*ALPHABET_SIZE + j]);\n\t\t}\n\t}\n')
      
     for parameterName, value in primaryParameterList:
         outputFile.write("\tfloat %s = pS->%s;\n" % (parameterName, parameterName))
-        outputFile.write('\tlogInfo("Parameter %s, value %%f\\n", %s);\n' % (parameterName, parameterName))
+        outputFile.write('\tst_logInfo("Parameter %s, value %%f\\n", %s);\n' % (parameterName, parameterName))
      
     #Now write out parameters.
     for parameterName, value in parameterList:
         if (parameterName, value) not in primaryParameterList:
             outputFile.write("\tfloat %s = %s;\n" % (parameterName, value))
-            outputFile.write('\tlogInfo("Parameter %s, value %%f\\n", %s);\n' % (parameterName, parameterName))
+            outputFile.write('\tst_logInfo("Parameter %s, value %%f\\n", %s);\n' % (parameterName, parameterName))
         
     
     #Now write out all transitions
@@ -354,7 +358,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
             #print "This is", fromState, toState, i[fromState]
             outputFile.write("\ttemp->ft%s_%s = LOG(%s);\n" % (fromState, toState, i[fromState]))
             outputFile.write("\ttemp->tbt%s_%s = LOG(%s);\n" % (fromState, toState, replaceCParameters(i[fromState], cParameters)))
-            outputFile.write('\tlogInfo("From state %s, To state %s, Forward Parameter %%f Traceback parameter %%f \\n", temp->ft%s_%s, temp->tbt%s_%s);\n' % (fromState, toState, fromState, toState, fromState, toState))
+            outputFile.write('\tst_logInfo("From state %s, To state %s, Forward Parameter %%f Traceback parameter %%f \\n", temp->ft%s_%s, temp->tbt%s_%s);\n' % (fromState, toState, fromState, toState, fromState, toState))
     outputFile.write("\n")
     
     #States already organised into correct order.
@@ -399,7 +403,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
         #Now write out these computed transitions
         for toState in silentModel.getStateNames():
             outputFile.write("\ttemp->lt%s_%s = LOG(fA[%s]);\n" % (fromState, toState, toState))
-            outputFile.write('\tlogInfo("From state %s, To state %s, LOOP PARAMETER %%f \\n", temp->lt%s_%s);\n' % (fromState, toState, fromState, toState))
+            outputFile.write('\tst_logInfo("From state %s, To state %s, LOOP PARAMETER %%f \\n", temp->lt%s_%s);\n' % (fromState, toState, fromState, toState))
     outputFile.write("\treturn temp; \n}\n\n")
     
     l = [ (INSERT_X, "insertX"), (INSERT_Z, "insertY"), (DELETE_X, "deleteX"), (DELETE_Z, "deleteY") ]
@@ -526,7 +530,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
         
     #Start states
     outputFile.write("float *startStates(struct CombinedTransitionModel *model) {\n")
-    outputFile.write("\tfloat *i; int32_t j; i = mallocLocal(sizeof(float)*STATE_NO);\n")
+    outputFile.write("\tfloat *i; int32_t j; i = st_malloc(sizeof(float)*STATE_NO);\n")
     outputFile.write("\tfor (j=0;j<STATE_NO; j++) i[j] = LOG_ZERO;\n")
     i = forwardModel.getStateNames(START)
     assert len(i) == 1, "More than one start state"
@@ -538,7 +542,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     
     #End states
     outputFile.write("float *endStates(struct CombinedTransitionModel *model) {\n")
-    outputFile.write("\tfloat *i; int32_t j; i = mallocLocal(sizeof(float)*STATE_NO);\n")
+    outputFile.write("\tfloat *i; int32_t j; i = st_malloc(sizeof(float)*STATE_NO);\n")
     outputFile.write("\tfor (j=0;j<STATE_NO; j++) i[j] = LOG_ZERO;\n\n")
     i = forwardModel.getStateNames(END)
     assert len(i) == 1, "More than one end state"
@@ -550,7 +554,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     
     #Paramaeter struct constructor
     outputFile.write("struct ParameterStruct *constructParamStruct(int argc, char *argv[]) {\n")
-    outputFile.write("\tint32_t i;\n\tchar *mod;\n\tstruct ParameterStruct *pM = mallocLocal(sizeof(struct ParameterStruct));\n")
+    outputFile.write("\tint32_t i;\n\tchar *mod;\n\tstruct ParameterStruct *pM = st_malloc(sizeof(struct ParameterStruct));\n")
     
     outputFile.write("\tfloat floatParser;\n")
     for parameterName, value in primaryParameterList:
