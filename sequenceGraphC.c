@@ -567,6 +567,7 @@ int32_t edgeComparator(struct Edge *edge1, struct Edge *edge2) {
 }
 
 int32_t edgeComparatorStub(struct AlignmentDataStructures *aDS, struct Edge *edge1, struct Edge *edge2) {
+	assert(aDS != NULL);
     return edgeComparator(edge1, edge2);
 }
 
@@ -1177,6 +1178,7 @@ void rVZ(struct AlignmentDataStructures *aDS, int64_t c, int32_t *x, int32_t *y,
 }
 
 int32_t rVZ_State(struct AlignmentDataStructures *aDS, int64_t c) {
+	assert(aDS != NULL);
     return c % stateNo();
 }
 
@@ -1191,6 +1193,7 @@ int64_t rVZ_Zless(struct AlignmentDataStructures *aDS, int64_t c) {
 }
 
 float *getTempCell(struct AlignmentDataStructures *aDS, int64_t vertex, struct Chunks *matrixChunks, struct hashtable *matrix) {
+	assert(aDS != NULL);
     int64_t *chunk;
     float *cell;
     int32_t i;
@@ -1308,8 +1311,8 @@ void printTreeNode(struct TreeNode *treeNode) {
     }
 }
 
-void debugSets(struct AlignmentDataStructures *aDS, struct List *newEdgesPointer, struct List *newVerticesPointer, struct List *illegalEdgesPointer, int32_t toX) {
-    if(DEBUG) { //debug code
+void debugSets(struct AlignmentDataStructures *aDS, struct List *newEdgesPointer, struct List *newVerticesPointer, struct List *illegalEdgesPointer) {
+	if(DEBUG) { //debug code
         int32_t xx; //debug variables
         int32_t i;
         //printf(" the vertex is " INT_STRING ", of " INT_STRING " " INT_STRING " " INT_STRING " \n", toX, aDS->sequenceGraphX->vertexNo, aDS->sequenceGraphY->vertexNo, aDS->sequenceGraphXSilentVertices_To[toX]);
@@ -1618,7 +1621,7 @@ void computeMatrix(struct AlignmentDataStructures *aDS) {
                 j = edgeX->from;
             }
         }
-        debugSets(aDS, newEdgesPointer, newVerticesPointer, illegalEdgesPointer, toX);
+        debugSets(aDS, newEdgesPointer, newVerticesPointer, illegalEdgesPointer);
         //end loop memory clean up
         //for the next recursion
         previousVertices[toX] = newVerticesPointer;
@@ -1760,6 +1763,7 @@ struct TreeNode *getTreeNode_matchXY(struct AlignmentDataStructures *aDS, struct
 }
 
 struct TreeNode *getTreeNode_deleteXY(struct AlignmentDataStructures *aDS, struct TraceBackEdge* traceBackEdge, int32_t transitionID, float *wV) {
+	assert(traceBackEdge != NULL);
 	static float fA[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	copyWV(fA, wV, ALPHABET_SIZE);
 	//multiplyWV(aDS->subModelX->deletionDistribution, aDS->subModelY->deletionDistribution, wV);
@@ -1767,7 +1771,8 @@ struct TreeNode *getTreeNode_deleteXY(struct AlignmentDataStructures *aDS, struc
 }
 
 struct TreeNode *getTreeNode_silentXY(struct AlignmentDataStructures *aDS, struct TraceBackEdge* traceBackEdge, int32_t transitionID) {
-    return copyConstructTreeNode(TREE_NODE_SILENT, transitionID, aDS->traversalID, NULL, NULL, NULL);
+    assert(traceBackEdge != NULL);
+	return copyConstructTreeNode(TREE_NODE_SILENT, transitionID, aDS->traversalID, NULL, NULL, NULL);
 }
 
 void updateIndices(struct TreeNode *treeNode, int32_t *currentIndices, int32_t leftMostLeafNo) {
