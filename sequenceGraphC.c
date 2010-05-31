@@ -502,7 +502,9 @@ void destructEdge(struct Edge *edge) {
     free(edge);
 }
 
-struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent, void *getTreeNode) {
+//struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent, void *getTreeNode) {
+struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent,
+		struct TreeNode *(*getTreeNode)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t)) {
 //struct TraceBackEdge *constructTraceBackEdge(LONG_64 from, LONG_64 to, FLOAT_32 edgeScore, struct Edge *edgeX, struct Edge *edgeY) {
     struct TraceBackEdge *temp;
 
@@ -1940,7 +1942,8 @@ struct SequenceGraph* convertTraceBackEdgesToSequenceGraph(struct AlignmentDataS
         }
         traceBackEdge->from = *((int32_t *)hashtable_search(vertexMap, &traceBackEdge->from));
         if(traceBackEdge->silent) {
-            treeNode = ((struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t))traceBackEdge->getTreeNode)(aDS, traceBackEdge, transitionID);
+        	//treeNode = ((struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t))traceBackEdge->getTreeNode)(aDS, traceBackEdge, transitionID);
+            treeNode = traceBackEdge->getTreeNode(aDS, traceBackEdge, transitionID);
             edge = copyConstructEdge(traceBackEdge->from, traceBackEdge->to, traceBackEdge->edgeScore,
             LOG_ZERO, NULL, TRUE, treeNode, i);
         }
@@ -2125,7 +2128,8 @@ struct SequenceGraph *traceBackMatrix(struct AlignmentDataStructures *aDS) {
         }
         else if (isYDelete(aDS->state)) {
             aDS->silent = FALSE;
-            aDS->getTreeNode = getTreeNode_deleteY;
+            //aDS->getTreeNode = getTreeNode_deleteY;
+            aDS->getTreeNode = (struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge*, int32_t))getTreeNode_deleteY;
             //for edgeX in edgesX {
             for (i = 0; i < edgesX->length; ++i) {
                 aDS->edgeX = edgesX->list[i];
@@ -2153,7 +2157,8 @@ struct SequenceGraph *traceBackMatrix(struct AlignmentDataStructures *aDS) {
         }
         else if (isXDelete(aDS->state)) {
             aDS->silent = FALSE;
-            aDS->getTreeNode = getTreeNode_deleteX;
+            //aDS->getTreeNode = getTreeNode_deleteX;
+            aDS->getTreeNode = (struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge*, int32_t))getTreeNode_deleteX;
             //for edgeY in edgesY {
             for (i = 0; i < edgesY->length; ++i) {
                 aDS->edgeY = edgesY->list[i];
@@ -2167,7 +2172,8 @@ struct SequenceGraph *traceBackMatrix(struct AlignmentDataStructures *aDS) {
         }
         else if (isMatch(aDS->state)) {  //is match
             aDS->silent = FALSE;
-            aDS->getTreeNode = getTreeNode_matchXY;
+            //aDS->getTreeNode = getTreeNode_matchXY;
+            aDS->getTreeNode = (struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge*, int32_t))getTreeNode_matchXY;
             //for edgeX in edgesX {
             for (i = 0; i < edgesX->length; ++i) {
                 aDS->edgeX = edgesX->list[i];
@@ -2189,7 +2195,8 @@ struct SequenceGraph *traceBackMatrix(struct AlignmentDataStructures *aDS) {
             //exit(0);
             assert(isXYDelete(aDS->state));
             aDS->silent = FALSE;
-            aDS->getTreeNode = getTreeNode_deleteXY;
+            //aDS->getTreeNode = getTreeNode_deleteXY;
+            aDS->getTreeNode = (struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge*, int32_t))getTreeNode_deleteXY;
             aDS->from = vZ(aDS, toX, toY, toZ+1);
             if(toZ+1 >= MAX_Z) {
             	fprintf(stderr, "Reached max z-threshold\n");

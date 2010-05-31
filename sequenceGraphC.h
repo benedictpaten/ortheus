@@ -42,6 +42,8 @@ void destructTreeNode(struct TreeNode *treeNode);
 
 //edge
 
+struct AlignmentDataStructures;
+
 struct Edge {
     //edge in sequence graph
 
@@ -67,10 +69,15 @@ struct TraceBackEdge {
     struct Edge *edgeX;
     struct Edge *edgeY;
     char silent;
-    void *getTreeNode;
+    //void *getTreeNode;
+    struct TreeNode *(*getTreeNode)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t);
 };
 
-struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent, void *getTreeNode);
+
+//struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent, void *getTreeNode);
+
+struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent,
+		struct TreeNode *(*getTreeNode)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t));
 
 void destructTraceBackEdge(struct TraceBackEdge *edge);
 
@@ -180,7 +187,8 @@ struct AlignmentDataStructures {
     //struct SubModel *subModelY;
     int64_t toCombined;
     int32_t state;
-    void *getTreeNode;
+    struct TreeNode *(*getTreeNode)(struct AlignmentDataStructures *, struct TraceBackEdge*, int32_t);
+    //void *getTreeNode;
     char silent;
     struct Edge *edgeX;
     struct Edge *edgeY;
