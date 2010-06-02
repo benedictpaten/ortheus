@@ -504,7 +504,7 @@ void destructEdge(struct Edge *edge) {
 
 //struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent, void *getTreeNode) {
 struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent,
-		struct TreeNode *(*getTreeNode)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t)) {
+        struct TreeNode *(*getTreeNode)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t)) {
 //struct TraceBackEdge *constructTraceBackEdge(LONG_64 from, LONG_64 to, FLOAT_32 edgeScore, struct Edge *edgeX, struct Edge *edgeY) {
     struct TraceBackEdge *temp;
 
@@ -569,7 +569,7 @@ int32_t edgeComparator(struct Edge *edge1, struct Edge *edge2) {
 }
 
 int32_t edgeComparatorStub(struct AlignmentDataStructures *aDS, struct Edge *edge1, struct Edge *edge2) {
-	assert(aDS != NULL);
+    assert(aDS != NULL);
     return edgeComparator(edge1, edge2);
 }
 
@@ -668,7 +668,7 @@ int32_t *randomChoices(float *probs, int32_t sizeA, int32_t pathWeight) {
     cumulativeProbs[0] = totalProb;
     choices[0] = 0;
     for(i=1; i< sizeA; i++) {
-    	choices[i] = 0;
+        choices[i] = 0;
         LOG_PLUS_EQUALS(&totalProb, probs[i]);
         cumulativeProbs[i] = totalProb;
     }
@@ -677,13 +677,13 @@ int32_t *randomChoices(float *probs, int32_t sizeA, int32_t pathWeight) {
 
     //choiceProbs = [ LOG(RANDOM()) + totalProb for i in xrange(0, pathWeight) ]
     for(i=0; i< pathWeight; ++i) {
-    	randomChoice = RANDOM_LOG() + totalProb;
-    	for (j = 0; j < sizeA; ++j) {
-			if (cumulativeProbs[j] >= randomChoice) {
-				choices[j]++;
-				break;
-			}
-		}
+        randomChoice = RANDOM_LOG() + totalProb;
+        for (j = 0; j < sizeA; ++j) {
+            if (cumulativeProbs[j] >= randomChoice) {
+                choices[j]++;
+                break;
+            }
+        }
     }
 
     return choices;
@@ -692,12 +692,12 @@ int32_t *randomChoices(float *probs, int32_t sizeA, int32_t pathWeight) {
 //graph member holders
 
 struct GraphMemberHolder *constructGraphMember(void *graphMember, int32_t *sequenceConstraints, void (*destructGraphMember)(void *)) {
-	struct GraphMemberHolder *graphMemberHolder;
+    struct GraphMemberHolder *graphMemberHolder;
     graphMemberHolder = st_malloc(sizeof(struct GraphMemberHolder));
-	graphMemberHolder->graphMember = graphMember;
-	graphMemberHolder->sequenceConstraints = sequenceConstraints;
+    graphMemberHolder->graphMember = graphMember;
+    graphMemberHolder->sequenceConstraints = sequenceConstraints;
     graphMemberHolder->destructGraphMember = destructGraphMember;
-	return graphMemberHolder;
+    return graphMemberHolder;
 }
 
 void destructGraphMember(struct GraphMemberHolder *graphMemberHolder) {
@@ -1180,7 +1180,7 @@ void rVZ(struct AlignmentDataStructures *aDS, int64_t c, int32_t *x, int32_t *y,
 }
 
 int32_t rVZ_State(struct AlignmentDataStructures *aDS, int64_t c) {
-	assert(aDS != NULL);
+    assert(aDS != NULL);
     return c % stateNo();
 }
 
@@ -1189,13 +1189,13 @@ int64_t rVZ_StatelessVertex(struct AlignmentDataStructures *aDS, int64_t c) {
 }
 
 int64_t rVZ_Zless(struct AlignmentDataStructures *aDS, int64_t c) {
-	int32_t x, y, z, state;
-	rVZ(aDS, c, &x, &y, &z, &state);
-	return v(aDS, x, y);
+    int32_t x, y, z, state;
+    rVZ(aDS, c, &x, &y, &z, &state);
+    return v(aDS, x, y);
 }
 
 float *getTempCell(struct AlignmentDataStructures *aDS, int64_t vertex, struct Chunks *matrixChunks, struct hashtable *matrix) {
-	assert(aDS != NULL);
+    assert(aDS != NULL);
     int64_t *chunk;
     float *cell;
     int32_t i;
@@ -1314,7 +1314,7 @@ void printTreeNode(struct TreeNode *treeNode) {
 }
 
 void debugSets(struct AlignmentDataStructures *aDS, struct List *newEdgesPointer, struct List *newVerticesPointer, struct List *illegalEdgesPointer) {
-	if(DEBUG) { //debug code
+    if(DEBUG) { //debug code
         int32_t xx; //debug variables
         int32_t i;
         //printf(" the vertex is " INT_STRING ", of " INT_STRING " " INT_STRING " " INT_STRING " \n", toX, aDS->sequenceGraphX->vertexNo, aDS->sequenceGraphY->vertexNo, aDS->sequenceGraphXSilentVertices_To[toX]);
@@ -1691,14 +1691,14 @@ void computeMatrix(struct AlignmentDataStructures *aDS) {
         exit(73);
     }
     if(j) {
-    	fprintf(stderr, " Zero prob, so I have no choice but to exit, sorry! \n");
-    	//logDebug(" No path through alignment possible, so I have no choice but to exit, sorry! \n");
-    	exit(73);
+        fprintf(stderr, " Zero prob, so I have no choice but to exit, sorry! \n");
+        //logDebug(" No path through alignment possible, so I have no choice but to exit, sorry! \n");
+        exit(73);
     }
 }
 
 void assignSampling(struct AlignmentDataStructures *aDS,
-		int32_t fromState, int32_t toState, float edgeScore, float correctedEdgeScore) {
+        int32_t fromState, int32_t toState, float edgeScore, float correctedEdgeScore) {
     float *fromVertices;
     struct TraceBackEdge *edge;
 
@@ -1715,7 +1715,7 @@ void assignSampling(struct AlignmentDataStructures *aDS,
 }
 
 void assignSampling_CheckState(struct AlignmentDataStructures *aDS,
-		int32_t fromState, int32_t toState, float edgeScore, float correctedEdgeScore) {
+        int32_t fromState, int32_t toState, float edgeScore, float correctedEdgeScore) {
     //neccesary because model
     //may have multiple states for each type of transition
     if (aDS->state == toState) {
@@ -1729,8 +1729,8 @@ struct TreeNode *getTreeNode_insertX(struct AlignmentDataStructures *aDS, struct
 }
 
 struct TreeNode *getTreeNode_deleteX(struct AlignmentDataStructures *aDS, struct TraceBackEdge* traceBackEdge, int32_t transitionID, float *wV) {
-	copyWV(traceBackEdge->edgeY->wV, wV, ALPHABET_SIZE);
-	//multiplyWV(aDS->subModelX->deletionDistribution, traceBackEdge->edgeY->wV, wV);
+    copyWV(traceBackEdge->edgeY->wV, wV, ALPHABET_SIZE);
+    //multiplyWV(aDS->subModelX->deletionDistribution, traceBackEdge->edgeY->wV, wV);
     return copyConstructTreeNode(TREE_NODE_INTERNAL, transitionID,
                             aDS->traversalID, aDS->deleteNodeX, traceBackEdge->edgeY->treeNode, NULL);
 }
@@ -1747,7 +1747,7 @@ struct TreeNode *getTreeNode_insertY(struct AlignmentDataStructures *aDS, struct
 
 struct TreeNode *getTreeNode_deleteY(struct AlignmentDataStructures *aDS, struct TraceBackEdge* traceBackEdge, int32_t transitionID, float *wV) {
     copyWV(traceBackEdge->edgeX->wV, wV, ALPHABET_SIZE);
-	//multiplyWV(traceBackEdge->edgeX->wV, aDS->subModelY->deletionDistribution, wV);
+    //multiplyWV(traceBackEdge->edgeX->wV, aDS->subModelY->deletionDistribution, wV);
     return copyConstructTreeNode(TREE_NODE_INTERNAL, transitionID,
                                  aDS->traversalID, traceBackEdge->edgeX->treeNode, aDS->deleteNodeY, NULL);
 }
@@ -1765,16 +1765,16 @@ struct TreeNode *getTreeNode_matchXY(struct AlignmentDataStructures *aDS, struct
 }
 
 struct TreeNode *getTreeNode_deleteXY(struct AlignmentDataStructures *aDS, struct TraceBackEdge* traceBackEdge, int32_t transitionID, float *wV) {
-	assert(traceBackEdge != NULL);
-	static float fA[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	copyWV(fA, wV, ALPHABET_SIZE);
-	//multiplyWV(aDS->subModelX->deletionDistribution, aDS->subModelY->deletionDistribution, wV);
+    assert(traceBackEdge != NULL);
+    static float fA[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    copyWV(fA, wV, ALPHABET_SIZE);
+    //multiplyWV(aDS->subModelX->deletionDistribution, aDS->subModelY->deletionDistribution, wV);
     return copyConstructTreeNode(TREE_NODE_INTERNAL, transitionID, aDS->traversalID, aDS->deleteNodeX, aDS->deleteNodeY, NULL);
 }
 
 struct TreeNode *getTreeNode_silentXY(struct AlignmentDataStructures *aDS, struct TraceBackEdge* traceBackEdge, int32_t transitionID) {
     assert(traceBackEdge != NULL);
-	return copyConstructTreeNode(TREE_NODE_SILENT, transitionID, aDS->traversalID, NULL, NULL, NULL);
+    return copyConstructTreeNode(TREE_NODE_SILENT, transitionID, aDS->traversalID, NULL, NULL, NULL);
 }
 
 void updateIndices(struct TreeNode *treeNode, int32_t *currentIndices, int32_t leftMostLeafNo) {
@@ -1942,7 +1942,7 @@ struct SequenceGraph* convertTraceBackEdgesToSequenceGraph(struct AlignmentDataS
         }
         traceBackEdge->from = *((int32_t *)hashtable_search(vertexMap, &traceBackEdge->from));
         if(traceBackEdge->silent) {
-        	//treeNode = ((struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t))traceBackEdge->getTreeNode)(aDS, traceBackEdge, transitionID);
+            //treeNode = ((struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t))traceBackEdge->getTreeNode)(aDS, traceBackEdge, transitionID);
             treeNode = traceBackEdge->getTreeNode(aDS, traceBackEdge, transitionID);
             edge = copyConstructEdge(traceBackEdge->from, traceBackEdge->to, traceBackEdge->edgeScore,
             LOG_ZERO, NULL, TRUE, treeNode, i);
@@ -2199,8 +2199,8 @@ struct SequenceGraph *traceBackMatrix(struct AlignmentDataStructures *aDS) {
             aDS->getTreeNode = (struct TreeNode *(*)(struct AlignmentDataStructures *, struct TraceBackEdge*, int32_t))getTreeNode_deleteXY;
             aDS->from = vZ(aDS, toX, toY, toZ+1);
             if(toZ+1 >= MAX_Z) {
-            	fprintf(stderr, "Reached max z-threshold\n");
-            	exit(1);
+                fprintf(stderr, "Reached max z-threshold\n");
+                exit(1);
             }
             aDS->fromCell = getCell(aDS, rVZ_Zless(aDS, aDS->from));
             deleteFn_TraceBack(aDS, aDS->model, assignSampling_CheckState);
@@ -2221,7 +2221,7 @@ struct SequenceGraph *traceBackMatrix(struct AlignmentDataStructures *aDS) {
                     //pathWeightsHash[aDS.from] += pathWeight2
                 }
                 else {
-                	 //uglyf(" from to2 " LONG_INT_STRING " " LONG_INT_STRING " \n", aDS->from, aDS->to);
+                     //uglyf(" from to2 " LONG_INT_STRING " " LONG_INT_STRING " \n", aDS->from, aDS->to);
                     hashtable_insert(pathWeightsHash, constructChunkLong(traceBackEdge->from, longChunks), constructChunkInt(pathWeight2, intChunks));
                     //pathWeightsHash[aDS.from] = pathWeight2
                 }
@@ -2305,8 +2305,8 @@ void prepareGraphForAlignment(struct SequenceGraph *sequenceGraphX, struct Combi
     subModelX = model->subModelX;
     subModelY = model->subModelY;
     if(flipped) {
-    	subModelX = model->subModelY;
-    	subModelY = model->subModelX;
+        subModelX = model->subModelY;
+        subModelY = model->subModelX;
     }
     for(i=0; i<sequenceGraphX->edges->length; i++) {
         edge = sequenceGraphX->edges->list[i];
@@ -2649,7 +2649,7 @@ void branchUp(struct TreeNode *treeNode, float *working, float *currentResult, s
         //i = subModels[treeNode->traversalID->mid]->deletionDistribution;
         //memcpy(currentResult, i, sizeof(FLOAT_32)*ALPHABET_SIZE);
         for(j=0; j<alphabetSize; j++) {
-        	currentResult[j] = 1.0f;
+            currentResult[j] = 1.0f;
         }
         totalP[treeNode->traversalID->mid] = 0.0f;
     }
@@ -2691,7 +2691,7 @@ void branchDown(struct TreeNode *treeNode, float *ancestorProbs, float *working,
 }
 
 void downPass(struct TreeNode *treeNode, float *ancestorProbs, float *working, float *results,
-			  struct SubModel **subModels, float *totalP, float totalAncP, float globalTotalP, int32_t alphabetSize) {
+              struct SubModel **subModels, float *totalP, float totalAncP, float globalTotalP, int32_t alphabetSize) {
     float *i;
     float *j;
     float *k;
@@ -2772,12 +2772,12 @@ float *felsensteins(struct TreeNode *treeNode, struct SubModel **subModels, int3
     downPass(treeNode, ancestorProbs, working, results, subModels, totalP, totalAncP, globalTotalP, alphabetSize);
     free(totalP);
     /*for(i=0; i<nodeNumber; i++) {
-    	fA2 = results + i*ALPHABET_SIZE;
-    	for(j=0; j<ALPHABET_SIZE; j++) {
-    		if(fA2[j] >= -0.5) {
-    			goto end;
-    		}
-    	}
+        fA2 = results + i*ALPHABET_SIZE;
+        for(j=0; j<ALPHABET_SIZE; j++) {
+            if(fA2[j] >= -0.5) {
+                goto end;
+            }
+        }
     }
     assert(FALSE);
     end:*/

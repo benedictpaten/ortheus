@@ -165,7 +165,7 @@ float * dNAMap_IUPACToWVFn(char i) {
 }
 
 int32_t subMatCo(int32_t i, int32_t j, int32_t alphabetSize) {
-	return i *alphabetSize + j;
+    return i *alphabetSize + j;
 }
 
 /////////////////////////////////////////////////////////
@@ -316,29 +316,29 @@ struct SubModel *constructJukesCantorSubModel(float distance) {
 /////////////////////////////////////////////////////////
 
 float jukesCantorCorrection(float subsPerSite) {
-	assert(subsPerSite >= 0.0);
-	assert(subsPerSite <= 1.0);
-	if(subsPerSite >= 0.749) { //Correction is not defined for distances greater than 0.75, where goes to infinity
-		st_logInfo("Warning, distance has been artificially rounded to 5 subs per site given distance: " "%f" "\n", subsPerSite);
-		return 5.0;
-	}
-	return -(3.0/4.0) * log(1.0 - ((4.0/3.0)*subsPerSite));
+    assert(subsPerSite >= 0.0);
+    assert(subsPerSite <= 1.0);
+    if(subsPerSite >= 0.749) { //Correction is not defined for distances greater than 0.75, where goes to infinity
+        st_logInfo("Warning, distance has been artificially rounded to 5 subs per site given distance: " "%f" "\n", subsPerSite);
+        return 5.0;
+    }
+    return -(3.0/4.0) * log(1.0 - ((4.0/3.0)*subsPerSite));
 }
 
 void kimuraCorrection(float transitionsPerSite, float transversionsPerSite,
-					  float *correctedTransitionsPerSite, float *correctedTransversionsPerSite) {
-	assert(transitionsPerSite >= 0.0);
-	assert(transversionsPerSite >= 0.0);
-	assert(transitionsPerSite + transversionsPerSite <= 1.0);
+                      float *correctedTransitionsPerSite, float *correctedTransversionsPerSite) {
+    assert(transitionsPerSite >= 0.0);
+    assert(transversionsPerSite >= 0.0);
+    assert(transitionsPerSite + transversionsPerSite <= 1.0);
 
-	if(transversionsPerSite >= 0.497 || transitionsPerSite + transversionsPerSite > 0.749) { //Correction is not defined for transversions per site greater than 0.5, where goes to infinity
-		st_logInfo("Warning, distance has been artificially rounded to 5 subs per site given transitions and transversion observations: " "%f" " " "%f" "\n", transitionsPerSite, transversionsPerSite);
-		*correctedTransitionsPerSite = 2.5;
-		*correctedTransversionsPerSite = 2.5;
-		return;
-	}
+    if(transversionsPerSite >= 0.497 || transitionsPerSite + transversionsPerSite > 0.749) { //Correction is not defined for transversions per site greater than 0.5, where goes to infinity
+        st_logInfo("Warning, distance has been artificially rounded to 5 subs per site given transitions and transversion observations: " "%f" " " "%f" "\n", transitionsPerSite, transversionsPerSite);
+        *correctedTransitionsPerSite = 2.5;
+        *correctedTransversionsPerSite = 2.5;
+        return;
+    }
 
-	*correctedTransitionsPerSite = -(0.5 * log(1.0 - 2.0*transitionsPerSite - transversionsPerSite)) + (0.25 * log(1.0 - 2.0*transversionsPerSite));
-	*correctedTransversionsPerSite = -0.5 * log(1.0 - 2.0 * transversionsPerSite);
+    *correctedTransitionsPerSite = -(0.5 * log(1.0 - 2.0*transitionsPerSite - transversionsPerSite)) + (0.25 * log(1.0 - 2.0*transversionsPerSite));
+    *correctedTransversionsPerSite = -0.5 * log(1.0 - 2.0 * transversionsPerSite);
 }
 

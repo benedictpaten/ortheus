@@ -82,6 +82,6 @@ float *reverseSubMatrixInPlace(float *wV, int32_t alphabetSize);
 float jukesCantorCorrection(float distance);
 
 void kimuraCorrection(float transitionsPerSite, float transversionsPerSite,
-					  float *correctedTransitionsPerSite, float *correctedTransversionsPerSite);
+                      float *correctedTransitionsPerSite, float *correctedTransversionsPerSite);
 
 #endif /*SUBSTITUTIONC_H_*/

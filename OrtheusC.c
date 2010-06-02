@@ -47,22 +47,22 @@ char *SCORE_OUTPUT_FILE = NULL;
 /////////////////////////////////////////////////////////
 
 struct TreeNodeHolder {
-	struct TreeNode *treeNode;
-	struct Edge *edge;
+    struct TreeNode *treeNode;
+    struct Edge *edge;
 };
 
 struct TreeNodeHolder *constructTreeNodeHolder(struct TreeNode *treeNode, struct Edge *edge) {
-	struct TreeNodeHolder *treeNodeHolder;
+    struct TreeNodeHolder *treeNodeHolder;
 
-	treeNodeHolder = st_malloc(sizeof(struct TreeNodeHolder));
-	treeNodeHolder->treeNode = treeNode;
-	treeNodeHolder->edge = edge;
-	return treeNodeHolder;
+    treeNodeHolder = st_malloc(sizeof(struct TreeNodeHolder));
+    treeNodeHolder->treeNode = treeNode;
+    treeNodeHolder->edge = edge;
+    return treeNodeHolder;
 }
 
 void destructTreeNodeHolder(struct TreeNodeHolder *treeNodeHolder) {
-	//destructTreeNode(treeNodeHolder->treeNode);
-	free(treeNodeHolder);
+    //destructTreeNode(treeNodeHolder->treeNode);
+    free(treeNodeHolder);
 }
 
 float *convertToWVSeq(char *seq, int32_t length, float *(*map)(char i)) {
@@ -230,8 +230,8 @@ struct List *convertAlignmentToColumns(struct List *alignment, int32_t nodeNumbe
     list = constructEmptyList(alignment->length, free);
     list->length = 0;
     for(i=0; i<alignment->length; i++) {
-    	//uglyf(" hi %i \n", i);
-    	treeNodeHolder = alignment->list[i];
+        //uglyf(" hi %i \n", i);
+        treeNodeHolder = alignment->list[i];
         treeNode = getFirstNonSilentVertex(treeNodeHolder->treeNode);
         if(treeNode != NULL) {
             listAppend(list, felsensteins(treeNode, subModels, nodeNumber, ancestorProbs));
@@ -239,7 +239,7 @@ struct List *convertAlignmentToColumns(struct List *alignment, int32_t nodeNumbe
             FLOAT_32 *fA;
             fA = list->list[list->length-1];
             for(xx=0; xx<nodeNumber; xx++) {
-            	uglyf(" %c ", dNAMap_WVToACTGFn(fA + xx*ALPHABET_SIZE));
+                uglyf(" %c ", dNAMap_WVToACTGFn(fA + xx*ALPHABET_SIZE));
             }
             uglyf(" %f %i %i %i \n ", treeNodeHolder->edge->edgeScore, treeNodeHolder->edge->iD, treeNodeHolder->treeNode->left, treeNodeHolder->treeNode->transitionID); //, ((struct TreeNode *)alignment->list[i])->);*/
         }
@@ -435,8 +435,8 @@ int32_t lastInternalNodeState(struct List *alignment, int32_t i) {
 
     k = INT_MAX;
     for(j=alignment->length-1; j>= 0; j--) {
-    	treeNodeHolder = alignment->list[j];
-    	treeNode = treeNodeHolder->treeNode;
+        treeNodeHolder = alignment->list[j];
+        treeNode = treeNodeHolder->treeNode;
         if(lastInternalNodeState_TreeNode(treeNode, i, &k)) {
             break;
         }
@@ -461,11 +461,11 @@ void calculateTreeStates(struct List *alignment, int32_t nodeNo, int32_t *states
 
 void shrinkAlignment(struct List *linearAlignment, int32_t columnGap) {
     struct TreeNodeHolder *treeNodeHolder;
-	struct TreeNode *treeNode;
+    struct TreeNode *treeNode;
 
     while(linearAlignment->length > 0 && columnGap > 0) {
         treeNodeHolder = linearAlignment->list[--linearAlignment->length];
-    	treeNode = treeNodeHolder->treeNode;
+        treeNode = treeNodeHolder->treeNode;
         treeNode = getFirstNonSilentVertex(treeNode);
         if(treeNode != NULL) {
             columnGap--;
@@ -560,7 +560,7 @@ int main(int argc, char *argv[]) {
     for(i=1; i<argc; i++) {
         mod = argv[i];
         if(mod[0] != '-') {
-        	continue;
+            continue;
         }
         assert(mod[0] == '-');
         switch(mod[1]) {
@@ -623,7 +623,7 @@ int main(int argc, char *argv[]) {
                 SCORE_OUTPUT_FILE = argv[++i];
                 break;
             default:
-            	break;
+                break;
         }
     }
     parameterStruct = constructParamStruct(argc, argv);

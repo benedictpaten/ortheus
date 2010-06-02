@@ -77,7 +77,7 @@ struct TraceBackEdge {
 //struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent, void *getTreeNode);
 
 struct TraceBackEdge *constructTraceBackEdge(int64_t from, int64_t to, float edgeScore, struct Edge *edgeX, struct Edge *edgeY, char silent,
-		struct TreeNode *(*getTreeNode)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t));
+        struct TreeNode *(*getTreeNode)(struct AlignmentDataStructures *, struct TraceBackEdge *, int32_t));
 
 void destructTraceBackEdge(struct TraceBackEdge *edge);
 
@@ -206,7 +206,7 @@ float *endStates(struct CombinedTransitionModel *model);
 //void turnOffDeleteXYLoopCorrection(struct CombinedTransitionModel *model);
 
 void silentFn(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, float *cell,
-					  void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float));
+                      void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float));
 
 //void silentFn(struct AlignmentDataStructures *, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *, INT_32, INT_32, FLOAT_32));
 
