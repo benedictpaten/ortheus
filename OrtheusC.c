@@ -512,7 +512,7 @@ int main(int argc, char *argv[]) {
     struct ParameterStruct *parameterStruct;
 
     float totalScore;
-    float *ancestorProbs;
+    float *ancestorProbs = NULL;
     struct List *alignment;
     char *mod;
     struct List *linearAlignment;
