@@ -2279,6 +2279,7 @@ int wrapInGraphHolders_intComp(int32_t **iAA, int32_t **iAA2) {
         }
     }
     assert(FALSE);
+    return 0;
 }
 
 void wrapInGraphHolders(struct AlignmentDataStructures *aDS, struct List *list, void *key, int32_t(*comp)(struct AlignmentDataStructures *, struct GraphMemberHolder *, struct GraphMemberHolder *)) {
