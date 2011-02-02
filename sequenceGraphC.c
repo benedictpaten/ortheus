@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2008-2011 by Benedict Paten (benedictpaten@gmail.com)
+ *
+ * Released under the MIT license, see LICENSE.txt
+ */
 #include <assert.h>
 #include <limits.h>
 #include <stdio.h>

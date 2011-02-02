@@ -1,4 +1,8 @@
-#!/usr/local/bin/python2.3
+#!/usr/bin/env python
+
+#Copyright (C) 2008-2011 by Benedict Paten (benedictpaten@gmail.com)
+#
+#Released under the MIT license, see LICENSE.txt
 
 """
 A script suitable for aligning large numbers of sequences, in a progressive, nested fashion using ancestor inferral. It sub-divides the 
