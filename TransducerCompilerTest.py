@@ -3,12 +3,12 @@ import os
 
 from TransducerCompiler import compileTransducerToCCode
 
-from sonLib.misc import sonTraceRootPath
+from ortheus.common import ortheusRootPath
  
 class TestCase(unittest.TestCase):
     
     def setUp(self):
-        self.rootPath = sonTraceRootPath() + "/src/ortheus/models"
+        self.rootPath = os.path.join(ortheusRootPath(), "models")
         unittest.TestCase.setUp(self)
     
     def tearDown(self):
