@@ -1,6 +1,5 @@
-include ../../include.mk
-binPath = ../../bin
-libPath = ../../lib
+rootPath = ./
+include ./include.mk
 
 all : ${binPath}/ortheus_core ${binPath}/Ortheus.py
 
@@ -25,8 +24,8 @@ ${binPath}/Ortheus.py : Ortheus.py old/Nester.py old/Stitcher.py old/EstimateTre
 	cp Ortheus.py ${binPath}/Ortheus.py
 	chmod +x ${binPath}/Ortheus.py
 
-${binPath}/ortheus_core : *.c *.h xyzModelC.c xyzModelC.h ${libPath}/sonLib.a
-	${cxx} ${cflags} -I ${libPath} -o ${binPath}/ortheus_core *.c ${libPath}/sonLib.a
+${binPath}/ortheus_core : *.c *.h xyzModelC.c xyzModelC.h ${basicLibsDependencies}
+	${cxx} ${cflags} -I ${libPath} -o ${binPath}/ortheus_core *.c ${basicLibs}
 
 # stdin from </dev/null works around stray stdin read on OS/X that hangs backgroud
 # jobs
