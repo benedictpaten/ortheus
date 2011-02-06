@@ -38,4 +38,6 @@ xyzModelC.c xyzModelC.h : ${model} ${paramModel} TransducerComposer.py Transduce
 	#Use this line if you want the pretty picture
 	#${makeGraph} ${modelPath}/model.dot -Tpdf > ${modelPath}/model.pdf
   
-
+tests :
+	#Running python allTests.py
+	PYTHONPATH=.. PATH=../../bin:$$PATH python allTests.py --testLength=SHORT --logDebug
