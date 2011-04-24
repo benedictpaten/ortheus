@@ -1,0 +1,7 @@
+/model.otra
+/xyzModelC.c
+/xyzModelC.h
+*.pyc
+*.[ao]
+lib/*
+bin/*
