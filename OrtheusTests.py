@@ -39,7 +39,6 @@ class TestCase(unittest.TestCase):
             os.remove(tempFile)
         unittest.TestCase.tearDown(self)
         
-        
     def testENm001(self):
         if TestStatus.getTestStatus() == TestStatus.TEST_VERY_LONG:
             encodePath = TestStatus.getPathToDataSets() + "/MAY-2005/ENm001"
