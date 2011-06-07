@@ -588,10 +588,10 @@ int main(int argc, char *argv[]) {
                 OUTPUT_ALIGNMENT_FILE = argv[++i];
                 break;
             case 'e':
-                st_setLogLevel(ST_LOGGING_DEBUG);
+                st_setLogLevel(debug);
                 break;
             case 'f':
-                st_setLogLevel(ST_LOGGING_INFO);
+                st_setLogLevel(info);
                 break;
             case 'g':
                 WRITE_MFA_ALIGNMENT = FALSE;
@@ -654,7 +654,7 @@ int main(int argc, char *argv[]) {
     binaryTreeNodes = st_malloc(sizeof(void *)*nodeNumber);
     subModels = st_malloc(sizeof(void *)*nodeNumber);
     getBinaryTreeNodesInMidOrder(newickTree, binaryTreeNodes);
-    if(st_getLogLevel() == ST_LOGGING_DEBUG) {
+    if(st_getLogLevel() == debug) {
         printBinaryTree(stderr, newickTree);
     }
     st_logInfo("Newick-Tree seems okay\n");
