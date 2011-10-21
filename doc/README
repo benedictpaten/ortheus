@@ -13,7 +13,7 @@ The input is generally a set of sequences (in Fasta format) (and optionally a tr
 Newick format), while the output is a multi-fasta alignment containing both the leaves 
 and ancestor sequences, and a tree (if none was given initially).
 
-To run Ortheus type python Ortheus.py [arguments] (after following the installation instructions). To see
+To run Ortheus type python Ortheus.py [arguments] (after following the installation instructions, see the readme.md in the top level directory). To see
 the list of all possible arguments simply omit all arguments. The only mandatory
 arguments are the list of sequence files (which must number greater than or equal
 to two). If a tree is not specified then Ortheus will estimate a tree, using
@@ -49,7 +49,7 @@ python Ortheus.py -d '(0:0.1, 1:0.1);' -e seq1.fa seq2.fa
 
 ON TREE ESTIMATION
 
-As mentioned, Ortheus will attempt to estimate a tree is none is specified. This relies on using the Semphy program,
+As mentioned, Ortheus will attempt to estimate a tree if none is specified. This relies on using the Semphy program,
 which must be installed and callable using the 'semphy' command. The strategy for tree building is pretty simple.
 
 For given number of iterations, generate a random binary tree, and align sequences using Pecan. Take ungapped columns and 
