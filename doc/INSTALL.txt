@@ -12,4 +12,9 @@ where FOO/sonLib is the path to the base directory of Ortheus.
 Modify the include.mk file to point at where you installed sonLib.
 In Ortheus type 'make all' 
 
+(5) Add the bin path to your path.
+Add the path ortheus/bin to your path, this is where the binaries are contained
+
+(6) Run 'make test' from the base directory to check all went well
+
 See https://github.com/benedictpaten/ for different projects.
