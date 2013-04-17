@@ -30,14 +30,14 @@
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-int32_t NUMBER_OF_SAMPLES = 100;
-int32_t CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE = 10;
-int32_t TOTAL_CONSTRAINTS = TRUE;
+int64_t NUMBER_OF_SAMPLES = 100;
+int64_t CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE = 10;
+int64_t TOTAL_CONSTRAINTS = TRUE;
 float DEFAULT_BINARY_TREE_DISTANCE = 0.0001f;
-int32_t WRITE_MFA_ALIGNMENT = TRUE;
+int64_t WRITE_MFA_ALIGNMENT = TRUE;
 
 char *OUTPUT_ALIGNMENT_FILE = NULL;
-int32_t VITERBI_COLUMN_GAP = 0;
+int64_t VITERBI_COLUMN_GAP = 0;
 char *TREE_STATES_INPUT_FILE = NULL;
 char *TREE_STATES_OUTPUT_FILE = NULL;
 char *SCORE_OUTPUT_FILE = NULL;
@@ -70,8 +70,8 @@ void destructTreeNodeHolder(struct TreeNodeHolder *treeNodeHolder) {
     free(treeNodeHolder);
 }
 
-float *convertToWVSeq(char *seq, int32_t length, float *(*map)(char i)) {
-    int32_t i;
+float *convertToWVSeq(char *seq, int64_t length, float *(*map)(char i)) {
+    int64_t i;
     float *wV;
     float *seqWV;
 
@@ -109,9 +109,9 @@ float *dNAMap_CharToWVFn(char i) {
 }
 
 char dNAMap_WVToACTGFn(float *wV) {
-    int32_t i;
+    int64_t i;
     float j;
-    int32_t k;
+    int64_t k;
     //converts char vectors to an ACTG
     if(wV[0] < -0.5f) { //is gap
         return '-';
@@ -147,11 +147,11 @@ char dNAMap_WVToACTGFn(float *wV) {
     return -1;
 }
 
-void writeFastaAlignment(FILE *file, float **columnAlignment, int32_t columnNo, char **names, int32_t startSeq, int32_t seqInc, int32_t seqNo, char (*map)(float *), char *repeatBases) {
+void writeFastaAlignment(FILE *file, float **columnAlignment, int64_t columnNo, char **names, int64_t startSeq, int64_t seqInc, int64_t seqNo, char (*map)(float *), char *repeatBases) {
     //Writes out column alignment to given file multi-fasta format
-    int32_t seq;
-    int32_t i;
-    int32_t j;
+    int64_t seq;
+    int64_t i;
+    int64_t j;
     char k;
     float *column;
 
@@ -168,11 +168,11 @@ void writeFastaAlignment(FILE *file, float **columnAlignment, int32_t columnNo, 
     }
 }
 
-struct SequenceGraph *convertSeqToSeqGraph(float *seq, int32_t seqLength, struct TraversalID *traversalID) {
+struct SequenceGraph *convertSeqToSeqGraph(float *seq, int64_t seqLength, struct TraversalID *traversalID) {
     struct List *edges;
     struct TreeNode *treeNode;
     float *wV;
-    int32_t i;
+    int64_t i;
 
     edges = constructEmptyList(seqLength, (void (*)(void *))destructEdge);
     //converts a list chars to a sequence graph
@@ -184,7 +184,7 @@ struct SequenceGraph *convertSeqToSeqGraph(float *seq, int32_t seqLength, struct
     return constructSequenceGraph(edges, seqLength+1);
 }
 
-void lineariseTreeNodes(struct TreeNode *treeNode, int32_t addToList, struct Edge *edge, struct List *list) {
+void lineariseTreeNodes(struct TreeNode *treeNode, int64_t addToList, struct Edge *edge, struct List *list) {
     if(treeNode->left != NULL) {
         lineariseTreeNodes(treeNode->left, TRUE, edge, list);
     }
@@ -200,7 +200,7 @@ void lineariseTreeNodes(struct TreeNode *treeNode, int32_t addToList, struct Edg
 }
 
 struct List *lineariseAlignment(struct List *alignment) {
-    int32_t i;
+    int64_t i;
     struct Edge *edge;
     struct List *list;
     //struct TreeNode *treeNode;
@@ -226,16 +226,16 @@ struct TreeNode *getFirstNonSilentVertex(struct TreeNode *treeNode) {
     return treeNode;
 }
 
-struct List *convertAlignmentToColumns(struct List *alignment, int32_t nodeNumber, struct SubModel **subModels, float *ancestorProbs) {
+struct List *convertAlignmentToColumns(struct List *alignment, int64_t nodeNumber, struct SubModel **subModels, float *ancestorProbs) {
     struct List *list;
-    int32_t i;
+    int64_t i;
     struct TreeNodeHolder *treeNodeHolder;
     struct TreeNode *treeNode;
 
     list = constructEmptyList(alignment->length, free);
     list->length = 0;
     for(i=0; i<alignment->length; i++) {
-        //uglyf(" hi %i \n", i);
+        //uglyf(" hi %" PRIi64 " \n", i);
         treeNodeHolder = alignment->list[i];
         treeNode = getFirstNonSilentVertex(treeNodeHolder->treeNode);
         if(treeNode != NULL) {
@@ -246,7 +246,7 @@ struct List *convertAlignmentToColumns(struct List *alignment, int32_t nodeNumbe
             for(xx=0; xx<nodeNumber; xx++) {
                 uglyf(" %c ", dNAMap_WVToACTGFn(fA + xx*ALPHABET_SIZE));
             }
-            uglyf(" %f %i %i %i \n ", treeNodeHolder->edge->edgeScore, treeNodeHolder->edge->iD, treeNodeHolder->treeNode->left, treeNodeHolder->treeNode->transitionID); //, ((struct TreeNode *)alignment->list[i])->);*/
+            uglyf(" %f %" PRIi64 " %" PRIi64 " %" PRIi64 " \n ", treeNodeHolder->edge->edgeScore, treeNodeHolder->edge->iD, treeNodeHolder->treeNode->left, treeNodeHolder->treeNode->transitionID); //, ((struct TreeNode *)alignment->list[i])->);*/
         }
     }
     return list;
@@ -270,7 +270,7 @@ char *treeNodeNames(struct BinaryTree *binaryTree, char **labels, char **leafLab
     }
 }
 
-struct Constraints ***buildPrimeConstraints(char *alignmentFile, int32_t seqNo, int32_t *seqLengths, struct BinaryTree *binaryTree) {
+struct Constraints ***buildPrimeConstraints(char *alignmentFile, int64_t seqNo, int64_t *seqLengths, struct BinaryTree *binaryTree) {
     struct Constraints ***primeConstraints;
     FILE *alignmentStream;
     struct List *alignmentSeqs;
@@ -289,7 +289,7 @@ struct Constraints ***buildPrimeConstraints(char *alignmentFile, int32_t seqNo, 
         fclose(alignmentStream);
 
         assert(seqNo == alignmentSeqs->length);
-        primeConstraints = buildAllConstraints_FromAlignment((char **)alignmentSeqs->list, *((int32_t *)alignmentSeqLengths->list[0]), seqNo, seqLengths, CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE, '-', binaryTree, TOTAL_CONSTRAINTS);
+        primeConstraints = buildAllConstraints_FromAlignment((char **)alignmentSeqs->list, *((int64_t *)alignmentSeqLengths->list[0]), seqNo, seqLengths, CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE, '-', binaryTree, TOTAL_CONSTRAINTS);
         //free memory used
         destructList(alignmentSeqs);
         destructList(alignmentSeqLengths);
@@ -297,15 +297,15 @@ struct Constraints ***buildPrimeConstraints(char *alignmentFile, int32_t seqNo, 
         //end
     }
     else {
-        primeConstraints = buildAllConstraints_FromAlignment(NULL, INT32_MIN, seqNo, (int32_t *)seqLengths, CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE, '-', binaryTree, TOTAL_CONSTRAINTS);
+        primeConstraints = buildAllConstraints_FromAlignment(NULL, INT32_MIN, seqNo, (int64_t *)seqLengths, CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE, '-', binaryTree, TOTAL_CONSTRAINTS);
     }
     st_logInfo("Finished parsing alignment file\n");
     st_logInfo("Built constraints lists\n");
     return primeConstraints;
 }
 
-struct List *parseSequences(char **argv, int32_t inputSequenceNumber, int32_t *seqNo, int32_t **seqLengthsA) {
-    int32_t i;
+struct List *parseSequences(char **argv, int64_t inputSequenceNumber, int64_t *seqNo, int64_t **seqLengthsA) {
+    int64_t i;
     struct List *seqs;
     struct List *seqLengths;
     struct List *fastaNames;
@@ -322,9 +322,9 @@ struct List *parseSequences(char **argv, int32_t inputSequenceNumber, int32_t *s
         fclose(fastaStream);
     }
     *seqNo = seqs->length;
-    *seqLengthsA = st_malloc(sizeof(int32_t)*(*seqNo));
+    *seqLengthsA = st_malloc(sizeof(int64_t)*(*seqNo));
     for(i=0; i<*seqNo; i++) {
-        (*seqLengthsA)[i] = *((int32_t *)seqLengths->list[i]);
+        (*seqLengthsA)[i] = *((int64_t *)seqLengths->list[i]);
     }
     //free memory
     destructList(seqLengths);
@@ -332,9 +332,9 @@ struct List *parseSequences(char **argv, int32_t inputSequenceNumber, int32_t *s
     return seqs;
 }
 
-struct SequenceGraph **buildLeafSequenceGraphs(struct List *seqs, int32_t seqNo, int32_t *seqLengths, int32_t nodeNumber, struct BinaryTree **binaryTreeNodes) {
-    int32_t i;
-    int32_t j;
+struct SequenceGraph **buildLeafSequenceGraphs(struct List *seqs, int64_t seqNo, int64_t *seqLengths, int64_t nodeNumber, struct BinaryTree **binaryTreeNodes) {
+    int64_t i;
+    int64_t j;
     float *wV;
     struct SequenceGraph **inputSequenceGraphs;
 
@@ -354,18 +354,18 @@ struct SequenceGraph **buildLeafSequenceGraphs(struct List *seqs, int32_t seqNo,
 
 //calculateRepeatBases((char **)seqs->list, (FLOAT_32 **)wvAlignment->list, seqNo, wvAlignment->length);
 
-char *calculateRepeatBases(char **leafSeqs, float **columnAlignment, int32_t seqNo, int32_t alignmentLength) {
-    int32_t i;
-    int32_t j;
-    int32_t k;
-    int32_t nodeNo = seqNo * 2 - 1;
-    int32_t repeatCount;
-    int32_t totalCount;
-    int32_t *indices;
+char *calculateRepeatBases(char **leafSeqs, float **columnAlignment, int64_t seqNo, int64_t alignmentLength) {
+    int64_t i;
+    int64_t j;
+    int64_t k;
+    int64_t nodeNo = seqNo * 2 - 1;
+    int64_t repeatCount;
+    int64_t totalCount;
+    int64_t *indices;
     char *repeatBases;
     float *column;
 
-    i = sizeof(int32_t)*seqNo;
+    i = sizeof(int64_t)*seqNo;
     indices = st_malloc(i);
     memset(indices, 0, i);
     i = sizeof(char)*nodeNo*alignmentLength;
@@ -410,8 +410,8 @@ char *calculateRepeatBases(char **leafSeqs, float **columnAlignment, int32_t seq
     return seqLengths[binaryTree->traversalID->leafNo];
 }*/
 
-int32_t lastInternalNodeState_TreeNode(struct TreeNode *treeNode, int32_t i, int32_t *state) {
-    int32_t k;
+int64_t lastInternalNodeState_TreeNode(struct TreeNode *treeNode, int64_t i, int64_t *state) {
+    int64_t k;
 
     k = treeNode->traversalID->mid;
     if(k == i && treeNode->type != TREE_NODE_DELETE)  {
@@ -432,9 +432,9 @@ int32_t lastInternalNodeState_TreeNode(struct TreeNode *treeNode, int32_t i, int
     return FALSE;
 }
 
-int32_t lastInternalNodeState(struct List *alignment, int32_t i) {
-    int32_t j;
-    int32_t k;
+int64_t lastInternalNodeState(struct List *alignment, int64_t i) {
+    int64_t j;
+    int64_t k;
     struct TreeNodeHolder *treeNodeHolder;
     struct TreeNode *treeNode;
 
@@ -449,11 +449,11 @@ int32_t lastInternalNodeState(struct List *alignment, int32_t i) {
     return k;
 }
 
-void calculateTreeStates(struct List *alignment, int32_t nodeNo, int32_t *states) {
+void calculateTreeStates(struct List *alignment, int64_t nodeNo, int64_t *states) {
     //returns an array containing the end states of the different INT_32ernal node
     //alignments
-    int32_t i;
-    int32_t j;
+    int64_t i;
+    int64_t j;
 
     for(i=1; i<nodeNo; i+=2) {
         //i runs in mid order
@@ -464,7 +464,7 @@ void calculateTreeStates(struct List *alignment, int32_t nodeNo, int32_t *states
     }
 }
 
-void shrinkAlignment(struct List *linearAlignment, int32_t columnGap) {
+void shrinkAlignment(struct List *linearAlignment, int64_t columnGap) {
     struct TreeNodeHolder *treeNodeHolder;
     struct TreeNode *treeNode;
 
@@ -487,8 +487,8 @@ void shrinkAlignment(struct List *linearAlignment, int32_t columnGap) {
 /////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[]) {
-    int32_t i;
-    int32_t j;
+    int64_t i;
+    int64_t j;
     //INT_32 k;
     //FLOAT_32 l;
     //float floatParser;
@@ -500,14 +500,14 @@ int main(int argc, char *argv[]) {
     struct BinaryTree *binaryTreeNode;
     struct SubModel **subModels;
     struct CombinedTransitionModel **combinedTransitionModels;
-    int32_t *seqLengths;
+    int64_t *seqLengths;
     struct List *seqs;
-    int32_t nodeNumber;
-    int32_t seqNo;
-    int32_t seqInc = 1;
-    int32_t startSeq = 0;
+    int64_t nodeNumber;
+    int64_t seqNo;
+    int64_t seqInc = 1;
+    int64_t startSeq = 0;
     char **inputSequences = NULL;
-    int32_t inputSequenceNumber = INT_MAX;
+    int64_t inputSequenceNumber = INT_MAX;
     FILE *outputAlignment = NULL;
 
     char *constraintAlignmentFile = NULL;
@@ -523,11 +523,11 @@ int main(int argc, char *argv[]) {
     struct List *linearAlignment;
     struct List *wvAlignment;
     char *repeatBases;
-    int32_t *treeStates;
+    int64_t *treeStates;
     FILE *treeStatesFile;
     FILE *scoreOutputFile;
 
-    int32_t seedTime = 0;
+    int64_t seedTime = 0;
 
     if(argc == 1) {
         fprintf(stderr, "Ortheus [MODIFIER_ARGUMENTS]\n");
@@ -636,7 +636,7 @@ int main(int argc, char *argv[]) {
     for(i=0; i<argc; i++) {
         st_logInfo("Argument recieved, no : " INT_STRING ", value : %s\n", i, argv[i]);
     }
-    st_logInfo("Program seeded with time %i ", seedTime);
+    st_logInfo("Program seeded with time %" PRIi64 " ", seedTime);
     srand(seedTime);
 
     st_logInfo("Anti diagonal relax value " INT_STRING " \n", CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE);
@@ -687,7 +687,7 @@ int main(int argc, char *argv[]) {
     primeConstraints = buildPrimeConstraints(constraintAlignmentFile, seqNo, seqLengths, newickTree);
     //do input tree states
     if(TREE_STATES_INPUT_FILE != NULL) {
-        treeStates = st_malloc(sizeof(int32_t)*nodeNumber);
+        treeStates = st_malloc(sizeof(int64_t)*nodeNumber);
         treeStatesFile = fopen(TREE_STATES_INPUT_FILE, "r");
         readIntegers(treeStatesFile, nodeNumber, treeStates);
         fclose(treeStatesFile);
@@ -727,8 +727,8 @@ int main(int argc, char *argv[]) {
     }
     if(TREE_STATES_OUTPUT_FILE != NULL) {
         if(treeStates == NULL) {
-            treeStates = st_malloc(sizeof(int32_t)*nodeNumber);
-            memset(treeStates, 0, sizeof(int32_t)*nodeNumber); //assumes start state is 0 (but then you won't get much using this with zero length alignments!)
+            treeStates = st_malloc(sizeof(int64_t)*nodeNumber);
+            memset(treeStates, 0, sizeof(int64_t)*nodeNumber); //assumes start state is 0 (but then you won't get much using this with zero length alignments!)
         }
         calculateTreeStates(linearAlignment, nodeNumber, treeStates);
         for(i=1; i<nodeNumber; i+=2) {

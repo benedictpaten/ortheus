@@ -254,7 +254,7 @@ def writeHModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     outputFile.write("\tfloat *ancestorProbs;\n")
     
     #Include root parameters
-    outputFile.write("\tint32_t includeRoot;\n")
+    outputFile.write("\tint64_t includeRoot;\n")
     
     #Now write out all transitions
     for toState in forwardModel.getStateNames():
@@ -302,7 +302,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     for state in forwardModel.getStateNames():
         i = forwardModel.getStateType(state) 
         if i != START and i != END:
-            outputFile.write("const int32_t %s = %i;\n" %(state, stateIndex))
+            outputFile.write("const int64_t %s = %i;\n" %(state, stateIndex))
             stateIndex += 1  
     
     outputFile.write("\n")
@@ -313,12 +313,12 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
           (DELETE_X, "XDelete"), (DELETE_Z, "YDelete"),\
           (MATCH, "Match") ]
     for stateType, functionName in l:
-        outputFile.write("inline int32_t is%s(int32_t state) {\n" % functionName)
+        outputFile.write("inline int64_t is%s(int64_t state) {\n" % functionName)
         for state in forwardModel.getStateNames(stateType):
             outputFile.write("\tif(state == %s) return TRUE;\n" % state)
         outputFile.write("\treturn FALSE; \n}\n\n")
     
-    outputFile.write("struct CombinedTransitionModel *constructCombinedTransitionModel(float DX, float DZ, int32_t includeRoot, struct ParameterStruct *pS) {\n") 
+    outputFile.write("struct CombinedTransitionModel *constructCombinedTransitionModel(float DX, float DZ, int64_t includeRoot, struct ParameterStruct *pS) {\n") 
     outputFile.write("\tstruct CombinedTransitionModel *temp = st_malloc(sizeof(struct CombinedTransitionModel));\n\n")
     
     outputFile.write('\tst_logInfo("Building combined transition model, DX: %%f, DY %%f\\n", DX, DZ);\n')
@@ -331,7 +331,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     subModel.writeCFile(outputFile)
     
     #Write out C parameters.
-    outputFile.write('\tint32_t i;\n\tint32_t j;\n')
+    outputFile.write('\tint64_t i;\n\tint64_t j;\n')
     
     outputFile.write('\tfor(i=0; i<ALPHABET_SIZE; i++) {\n')
     outputFile.write('\t\tst_logInfo("Stationary frequency %i value %%f \\n", i, temp->subModelX->stationaryDistribution[i]);\n\t}\n')
@@ -414,7 +414,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     for stateType, functionName in l:
         #Forward function
         outputFile.write("inline void %sFn(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, struct Edge *edge," % functionName) 
-        outputFile.write("void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float)) {\n")
+        outputFile.write("void (*assignFn)(struct AlignmentDataStructures *aDS, int64_t, int64_t, float)) {\n")
         for toState in forwardModel.getStateNames(stateType):
             for fromState in forwardModel.getTransitionsTo(toState).keys():
                 if not forwardModel.isStart(fromState):
@@ -423,7 +423,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
         outputFile.write("}\n\n")
         #Traceback function
         outputFile.write("inline void %sFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, struct Edge *edge," % functionName) 
-        outputFile.write("void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float, float)) {\n")
+        outputFile.write("void (*assignFn)(struct AlignmentDataStructures *aDS, int64_t, int64_t, float, float)) {\n")
         
         outputFile.write("\tif (model->includeRoot) {\n\t\tfloat i;\n")
         for toState in forwardModel.getStateNames(stateType):
@@ -444,7 +444,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     
     #Forward match function
     outputFile.write("inline void matchFn(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model,") 
-    outputFile.write("struct Edge *edgeX, struct Edge *edgeY, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float)) {\n")
+    outputFile.write("struct Edge *edgeX, struct Edge *edgeY, void (*assignFn)(struct AlignmentDataStructures *aDS, int64_t, int64_t, float)) {\n")
     outputFile.write("\t float m[ALPHABET_SIZE];\n")
     outputFile.write("\t float i;\n")
     outputFile.write("\t float j;\n")
@@ -459,7 +459,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     
     #Traceback match function
     outputFile.write("inline void matchFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model,") 
-    outputFile.write("struct Edge *edgeX, struct Edge *edgeY, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float, float)) {\n")
+    outputFile.write("struct Edge *edgeX, struct Edge *edgeY, void (*assignFn)(struct AlignmentDataStructures *aDS, int64_t, int64_t, float, float)) {\n")
     outputFile.write("\t float m[ALPHABET_SIZE];\n")
     outputFile.write("\t float i;\n")
     outputFile.write("\t float j;\n")
@@ -488,7 +488,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     
     #Forward silent/delete_xz function
     outputFile.write("inline void silentFn(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, float *cell,")
-    outputFile.write("void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float)) {\n")
+    outputFile.write("void (*assignFn)(struct AlignmentDataStructures *aDS, int64_t, int64_t, float)) {\n")
     
     for toState in silentModel.getStateNames():
         for fromState in forwardModel.getTransitionsTo(toState).keys():
@@ -510,7 +510,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     #Traceback silent/delete_xz functions
     l = [ (SILENT, "silent"), (DELETE_XZ, "delete") ]
     for stateType, functionName in l:
-        outputFile.write("inline void %sFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *aDS, int32_t, int32_t, float, float)) {\n" % functionName)
+        outputFile.write("inline void %sFn_TraceBack(struct AlignmentDataStructures *aDS, struct CombinedTransitionModel *model, void (*assignFn)(struct AlignmentDataStructures *aDS, int64_t, int64_t, float, float)) {\n" % functionName)
         outputFile.write("\tif (model->includeRoot) {\n")
         for toState in forwardModel.getStateNames(stateType):
             for fromState in forwardModel.getTransitionsTo(toState).keys():
@@ -530,11 +530,11 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     outputFile.write("void destructCombinedTransitionModel(struct CombinedTransitionModel *model) { free(model); }\n\n")
     
     #State no
-    outputFile.write("int32_t stateNo() { return STATE_NO; }\n\n")
+    outputFile.write("int64_t stateNo() { return STATE_NO; }\n\n")
         
     #Start states
     outputFile.write("float *startStates(struct CombinedTransitionModel *model) {\n")
-    outputFile.write("\tfloat *i; int32_t j; i = st_malloc(sizeof(float)*STATE_NO);\n")
+    outputFile.write("\tfloat *i; int64_t j; i = st_malloc(sizeof(float)*STATE_NO);\n")
     outputFile.write("\tfor (j=0;j<STATE_NO; j++) i[j] = LOG_ZERO;\n")
     i = forwardModel.getStateNames(START)
     assert len(i) == 1, "More than one start state"
@@ -546,7 +546,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     
     #End states
     outputFile.write("float *endStates(struct CombinedTransitionModel *model) {\n")
-    outputFile.write("\tfloat *i; int32_t j; i = st_malloc(sizeof(float)*STATE_NO);\n")
+    outputFile.write("\tfloat *i; int64_t j; i = st_malloc(sizeof(float)*STATE_NO);\n")
     outputFile.write("\tfor (j=0;j<STATE_NO; j++) i[j] = LOG_ZERO;\n\n")
     i = forwardModel.getStateNames(END)
     assert len(i) == 1, "More than one end state"
@@ -558,7 +558,7 @@ def writeCModel(outputFile, primaryParameterList, parameterList, cParameters, fo
     
     #Paramaeter struct constructor
     outputFile.write("struct ParameterStruct *constructParamStruct(int argc, char *argv[]) {\n")
-    outputFile.write("\tint32_t i;\n\tchar *mod;\n\tstruct ParameterStruct *pM = st_malloc(sizeof(struct ParameterStruct));\n")
+    outputFile.write("\tint64_t i;\n\tchar *mod;\n\tstruct ParameterStruct *pM = st_malloc(sizeof(struct ParameterStruct));\n")
     
     outputFile.write("\tfloat floatParser;\n")
     for parameterName, value in primaryParameterList:

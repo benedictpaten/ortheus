@@ -19,13 +19,13 @@ struct SubModel {
    float *forward;
    float *backward;
    float *stationaryDistribution;
-   int32_t alphabetSize;
+   int64_t alphabetSize;
 };
 
 struct SubModel *constructSubModel(float *forward,
                                    float *backward,
                                    float *stationaryDistribution,
-                                   int32_t alphabetSize);
+                                   int64_t alphabetSize);
 
 void destructSubModel(struct SubModel *subModel);
 
@@ -37,25 +37,25 @@ void destructSubModel(struct SubModel *subModel);
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-void copyWV(float *wVX, float *wVY, int32_t alphabetSize);
+void copyWV(float *wVX, float *wVY, int64_t alphabetSize);
 
-void transformWVByDistance(float *wV, float *subMatrix, float *result, int32_t alphabetSize);
+void transformWVByDistance(float *wV, float *subMatrix, float *result, int64_t alphabetSize);
 
-void multiplyWV(float *wVX, float *wVY, float *result, int32_t alphabetSize);
+void multiplyWV(float *wVX, float *wVY, float *result, int64_t alphabetSize);
 
-void normaliseWV_GiveFac(float *wV, float *result, float normFac, int32_t alphabetSize);
+void normaliseWV_GiveFac(float *wV, float *result, float normFac, int64_t alphabetSize);
 
-void normaliseWV(float *wV, float *result, int32_t alphabetSize);
+void normaliseWV(float *wV, float *result, int64_t alphabetSize);
 
-float combineWV(float *wVX, float *wVY, int32_t alphabetSize);
+float combineWV(float *wVX, float *wVY, int64_t alphabetSize);
 
-float sumWV(float *wV, int32_t alphabetSize);
+float sumWV(float *wV, int64_t alphabetSize);
 
-void addWV(float *wVX, float *wVY, float *result, int32_t alphabetSize);
+void addWV(float *wVX, float *wVY, float *result, int64_t alphabetSize);
 
 float * dNAMap_IUPACToWVFn(char i);
 
-int32_t subMatCo(int32_t i, int32_t j, int32_t alphabetSize);
+int64_t subMatCo(int64_t i, int64_t j, int64_t alphabetSize);
 
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ float *jukesCantor(float d);
 
 struct SubModel *constructJukesCantorSubModel(float distance);
 
-float *reverseSubMatrixInPlace(float *wV, int32_t alphabetSize);
+float *reverseSubMatrixInPlace(float *wV, int64_t alphabetSize);
 
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////

@@ -18,19 +18,19 @@
 #define CONSTRAINT_LESS_THAN 2
 
 struct Constraints {
-    int32_t *xList;
-    int32_t *yList;
-    int32_t *constraintsList;
-    int32_t length;
-    int32_t maxLength;
+    int64_t *xList;
+    int64_t *yList;
+    int64_t *constraintsList;
+    int64_t length;
+    int64_t maxLength;
 };
 
 void destructConstraints(struct Constraints *constraints);
 
-struct Constraints ***buildAllConstraints_FromAlignment(char **alignment, int32_t alignmentLength, int32_t seqNo, int32_t *seqLengths, int32_t relaxValue, int32_t gap, struct BinaryTree *binaryTree, int32_t totalConstraints);
+struct Constraints ***buildAllConstraints_FromAlignment(char **alignment, int64_t alignmentLength, int64_t seqNo, int64_t *seqLengths, int64_t relaxValue, int64_t gap, struct BinaryTree *binaryTree, int64_t totalConstraints);
 
-void getXConstraint(struct Constraints *constraints, int32_t x, int32_t *xConstraint, int32_t *yConstraint, int32_t *constraintType);
+void getXConstraint(struct Constraints *constraints, int64_t x, int64_t *xConstraint, int64_t *yConstraint, int64_t *constraintType);
 
-void getYConstraint(struct Constraints *constraints, int32_t y, int32_t *xConstraint, int32_t *yConstraint, int32_t *constraintType);
+void getYConstraint(struct Constraints *constraints, int64_t y, int64_t *xConstraint, int64_t *yConstraint, int64_t *constraintType);
 
 #endif /*CONSTRAINTSC_H_*/

@@ -35,9 +35,9 @@ struct Constraints *constructConstraintsBackward() {
     struct Constraints *constraints;
     constraints = st_malloc(sizeof(struct Constraints));
     assert(CONSTRAINT_BASE_SIZE >= 2);
-    constraints->xList = st_malloc(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
-    constraints->yList = st_malloc(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
-    constraints->constraintsList = st_malloc(sizeof(int32_t)*CONSTRAINT_BASE_SIZE);
+    constraints->xList = st_malloc(sizeof(int64_t)*CONSTRAINT_BASE_SIZE);
+    constraints->yList = st_malloc(sizeof(int64_t)*CONSTRAINT_BASE_SIZE);
+    constraints->constraintsList = st_malloc(sizeof(int64_t)*CONSTRAINT_BASE_SIZE);
     constraints->maxLength = CONSTRAINT_BASE_SIZE;
     constraints->length = 2;
 
@@ -61,7 +61,7 @@ void destructConstraints(struct Constraints *constraints) {
     free(constraints);
 }
 
-void appendConstraintBackwards(struct Constraints *constraints, int32_t x, int32_t y, int32_t type) {
+void appendConstraintBackwards(struct Constraints *constraints, int64_t x, int64_t y, int64_t type) {
     //add prime constraINT_32 to end of list of constraints
     assert(constraints->xList[constraints->length-2] > x);
     assert(constraints->yList[constraints->length-2] > y || (constraints->yList[constraints->length-2] == y &&
@@ -70,19 +70,19 @@ void appendConstraintBackwards(struct Constraints *constraints, int32_t x, int32
 
     if(constraints->length == constraints->maxLength) {
         void *new;
-        int32_t newSize;
+        int64_t newSize;
 
         newSize = 2*(constraints->maxLength);
 
-        new = memcpy(st_malloc(sizeof(int32_t)*newSize), constraints->xList, sizeof(int32_t)*(constraints->maxLength));
+        new = memcpy(st_malloc(sizeof(int64_t)*newSize), constraints->xList, sizeof(int64_t)*(constraints->maxLength));
         free(constraints->xList);
         constraints->xList = new;
 
-        new = memcpy(st_malloc(sizeof(int32_t)*newSize), constraints->yList, sizeof(int32_t)*(constraints->maxLength));
+        new = memcpy(st_malloc(sizeof(int64_t)*newSize), constraints->yList, sizeof(int64_t)*(constraints->maxLength));
         free(constraints->yList);
         constraints->yList = new;
 
-        new = memcpy(st_malloc(sizeof(int32_t)*newSize), constraints->constraintsList, sizeof(int32_t)*(constraints->maxLength));
+        new = memcpy(st_malloc(sizeof(int64_t)*newSize), constraints->constraintsList, sizeof(int64_t)*(constraints->maxLength));
         free(constraints->constraintsList);
         constraints->constraintsList = new;
 
@@ -99,7 +99,7 @@ void appendConstraintBackwards(struct Constraints *constraints, int32_t x, int32
 
 }
 
-static int bSearchComparatorX(int32_t *i, int32_t *j) {
+static int bSearchComparatorX(int64_t *i, int64_t *j) {
     if (*i > *j) {
         return -1;
     }
@@ -112,9 +112,9 @@ static int bSearchComparatorX(int32_t *i, int32_t *j) {
     return 1;
 }
 
-void getXConstraint(struct Constraints *constraints, int32_t x, int32_t *xConstraint, int32_t *yConstraint, int32_t *constraintType) {
-    int32_t *i;
-    int32_t j;
+void getXConstraint(struct Constraints *constraints, int64_t x, int64_t *xConstraint, int64_t *yConstraint, int64_t *constraintType) {
+    int64_t *i;
+    int64_t j;
     j = constraints->length-1;
     if(x <= constraints->xList[j]) {
         *xConstraint = constraints->xList[j];
@@ -122,7 +122,7 @@ void getXConstraint(struct Constraints *constraints, int32_t x, int32_t *xConstr
         *constraintType = constraints->constraintsList[j];
         return;
     }
-    i = bsearch(&x, constraints->xList, j, sizeof(int32_t),
+    i = bsearch(&x, constraints->xList, j, sizeof(int64_t),
                 (int (*)(const void *, const void *))bSearchComparatorX);
     //get prime constraINT_32 for poINT_32 x
     //i = bisect.bisect_left(self.xList, x)
@@ -132,7 +132,7 @@ void getXConstraint(struct Constraints *constraints, int32_t x, int32_t *xConstr
     //return Constraint(constraints->xList[i], constraints->yList[i], constraints->constraintTypes[i])
 }
 
-static int bSearchComparatorY(int32_t *i, int32_t *j) {
+static int bSearchComparatorY(int64_t *i, int64_t *j) {
     if (*i < *j) {
         return 1;
     }
@@ -145,9 +145,9 @@ static int bSearchComparatorY(int32_t *i, int32_t *j) {
     return -1;
 }
 
-void getYConstraint(struct Constraints *constraints, int32_t y, int32_t *xConstraint, int32_t *yConstraint, int32_t *constraintType) {
+void getYConstraint(struct Constraints *constraints, int64_t y, int64_t *xConstraint, int64_t *yConstraint, int64_t *constraintType) {
     //inverse of getXConstraINT_32
-    int32_t *i;
+    int64_t *i;
 
     if(y >= constraints->yList[0]) {
         *xConstraint = constraints->xList[0];
@@ -155,7 +155,7 @@ void getYConstraint(struct Constraints *constraints, int32_t y, int32_t *xConstr
         *constraintType = constraints->constraintsList[0];
         return;
     }
-    i = bsearch(&y, constraints->yList+1, constraints->length-1, sizeof(int32_t),
+    i = bsearch(&y, constraints->yList+1, constraints->length-1, sizeof(int64_t),
                 (int (*)(const void *, const void *))bSearchComparatorY);
     //get prime constraINT_32 for poINT_32 x
     //i = bisect.bisect_left(self.xList, x)
@@ -173,8 +173,8 @@ void getYConstraint(struct Constraints *constraints, int32_t y, int32_t *xConstr
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-struct hashtable **getEmptyConstraints(const int32_t seqNo, const int32_t boundaries, struct Chunks *intChunks) {
-    int32_t i;
+struct hashtable **getEmptyConstraints(const int64_t seqNo, const int64_t boundaries, struct Chunks *intChunks) {
+    int64_t i;
     struct hashtable **tables;
 
     tables = st_malloc(sizeof(struct hashtable *)*seqNo*seqNo);
@@ -190,20 +190,20 @@ struct hashtable **getEmptyConstraints(const int32_t seqNo, const int32_t bounda
     return tables;
 }
 
-void addConstraint(struct hashtable **constraintLists, int32_t *seqLengths, int32_t seqNo, int32_t seqX, int32_t seqY, int32_t x, int32_t y, struct Chunks *intChunks) {
+void addConstraint(struct hashtable **constraintLists, int64_t *seqLengths, int64_t seqNo, int64_t seqX, int64_t seqY, int64_t x, int64_t y, struct Chunks *intChunks) {
     struct hashtable *constraints;
-    int32_t *i;
+    int64_t *i;
     constraints = constraintLists[seqX * seqNo + seqY];
     if(y <= seqLengths[seqY]+1 && x >= 0) {
         //if not constraints.has_key(x):
         if((i = hashtable_search(constraints, &x)) == NULL) {
-            //printf(" hello %i %i %i %i \n", seqX, seqY, x, y);
+            //printf(" hello %" PRIi64 " %" PRIi64 " %" PRIi64 " %" PRIi64 " \n", seqX, seqY, x, y);
             hashtable_insert(constraints, constructChunkInt(x, intChunks), constructChunkInt(y, intChunks)); //constructInt(x), constructInt(y));
         }
         else {
             if(*i > y) {
             //if(*i < y) {
-                //printf(" changing of the constraINT_32 %i %i %i %i % \n", seqX, seqY, x, y, i);
+                //printf(" changing of the constraINT_32 %" PRIi64 " %" PRIi64 " %" PRIi64 " %" PRIi64 " % \n", seqX, seqY, x, y, i);
                 *i = y;
             }
             //assert(*i <= y);
@@ -211,14 +211,14 @@ void addConstraint(struct hashtable **constraintLists, int32_t *seqLengths, int3
     }
 }
 
-void addLessThanConstraints(int32_t *list, int32_t listLength, int32_t *indices, int32_t relaxValue,
-                            struct hashtable **constraints, int32_t *seqLengths, int32_t seqNo, struct Chunks *intChunks) {
-    int32_t i;
-    int32_t j;
-    int32_t seqX;
-    int32_t seqY;
-    int32_t posX;
-    int32_t posY;
+void addLessThanConstraints(int64_t *list, int64_t listLength, int64_t *indices, int64_t relaxValue,
+                            struct hashtable **constraints, int64_t *seqLengths, int64_t seqNo, struct Chunks *intChunks) {
+    int64_t i;
+    int64_t j;
+    int64_t seqX;
+    int64_t seqY;
+    int64_t posX;
+    int64_t posY;
     for(i=0; i < listLength; i++) {
         //for j in xrange(i+1, len(list)):
         for(j=i+1; j<listLength; j++) {
@@ -244,16 +244,16 @@ void addLessThanConstraints(int32_t *list, int32_t listLength, int32_t *indices,
     }
 }
 
-void addMiddleConstraints(int32_t *nonGaps, int32_t nonGapsLength,
-                          int32_t *gaps, int32_t gapsLength,
-                          int32_t *indices, int32_t relaxValue,
-                          struct hashtable **constraints, int32_t *seqLengths, int32_t seqNo, struct Chunks *intChunks) {
-    int32_t i;
-    int32_t j;
-    int32_t seqX;
-    int32_t seqY;
-    int32_t posX;
-    int32_t posY;
+void addMiddleConstraints(int64_t *nonGaps, int64_t nonGapsLength,
+                          int64_t *gaps, int64_t gapsLength,
+                          int64_t *indices, int64_t relaxValue,
+                          struct hashtable **constraints, int64_t *seqLengths, int64_t seqNo, struct Chunks *intChunks) {
+    int64_t i;
+    int64_t j;
+    int64_t seqX;
+    int64_t seqY;
+    int64_t posX;
+    int64_t posY;
 
     for(i=0; i < nonGapsLength; i++) {
         //for j in xrange(i+1, len(nonGaps)):
@@ -276,25 +276,25 @@ void addMiddleConstraints(int32_t *nonGaps, int32_t nonGapsLength,
     }
 }
 
-struct hashtable **convertAlignmentToInputConstraints(char **alignment, int32_t alignmentLength, int32_t seqNo, int32_t *seqLengths,
-                                                     int32_t relaxValue, char GAP, struct Chunks *intChunks) {
+struct hashtable **convertAlignmentToInputConstraints(char **alignment, int64_t alignmentLength, int64_t seqNo, int64_t *seqLengths,
+                                                     int64_t relaxValue, char GAP, struct Chunks *intChunks) {
     //reads in a given alignment and converts it to a map of constraints
     struct hashtable **constraints;
-    int32_t *indices;
-    int32_t i;
-    int32_t j;
-    int32_t k;
-    int32_t l;
-    int32_t *list;
-    int32_t *list2;
+    int64_t *indices;
+    int64_t i;
+    int64_t j;
+    int64_t k;
+    int64_t l;
+    int64_t *list;
+    int64_t *list2;
 
     constraints = getEmptyConstraints(seqNo, TRUE, intChunks);
-    indices = st_malloc(sizeof(int32_t)*seqNo); //[0]*seqNo
+    indices = st_malloc(sizeof(int64_t)*seqNo); //[0]*seqNo
     for(i=0; i<seqNo; i++) {
         indices[i] = 0;
     }
-    list = st_malloc(sizeof(int32_t)*seqNo);
-    list2 = st_malloc(sizeof(int32_t)*seqNo);
+    list = st_malloc(sizeof(int64_t)*seqNo);
+    list2 = st_malloc(sizeof(int64_t)*seqNo);
     //while((column = alignment()) != NULL) {
     for(i=0; i<alignmentLength; i++) {
         j=0;
@@ -322,8 +322,8 @@ struct hashtable **convertAlignmentToInputConstraints(char **alignment, int32_t 
     return constraints;
 }
 
-int32_t isAligned(int32_t *nonGaps, int32_t nonGapsLength, char **alignment, int32_t columnIndex, char GAP) {
-    int32_t i;
+int64_t isAligned(int64_t *nonGaps, int64_t nonGapsLength, char **alignment, int64_t columnIndex, char GAP) {
+    int64_t i;
 
     for(i=0; i<nonGapsLength; i++) {
         if(alignment[nonGaps[i]][columnIndex] != GAP) {
@@ -333,25 +333,25 @@ int32_t isAligned(int32_t *nonGaps, int32_t nonGapsLength, char **alignment, int
     return FALSE;
 }
 
-int32_t periodIsZero_Iter(int32_t *nonGaps, int32_t nonGapsLength, int32_t *gaps, int32_t gapsLength, int32_t from, int32_t to, int32_t change, char **alignment, char GAP, int32_t *l3) {
-    int32_t i;
-    int32_t j;
-    int32_t lLength;
-    int32_t l2Length;
-    int32_t l3Length;
+int64_t periodIsZero_Iter(int64_t *nonGaps, int64_t nonGapsLength, int64_t *gaps, int64_t gapsLength, int64_t from, int64_t to, int64_t change, char **alignment, char GAP, int64_t *l3) {
+    int64_t i;
+    int64_t j;
+    int64_t lLength;
+    int64_t l2Length;
+    int64_t l3Length;
 
-    static int32_t *l;
-    static int32_t *l2;
-    static int32_t lSize;
-    static int32_t l2Size;
+    static int64_t *l;
+    static int64_t *l2;
+    static int64_t lSize;
+    static int64_t l2Size;
 
-    l = arrayResize(l, &lSize, nonGapsLength + gapsLength, sizeof(int32_t));
-    l2 = arrayResize(l2, &l2Size, nonGapsLength + gapsLength, sizeof(int32_t));
+    l = arrayResize(l, &lSize, nonGapsLength + gapsLength, sizeof(int64_t));
+    l2 = arrayResize(l2, &l2Size, nonGapsLength + gapsLength, sizeof(int64_t));
     lLength = nonGapsLength;
     l2Length = gapsLength;
     l3Length = 0;
-    memcpy(l, nonGaps, nonGapsLength*sizeof(int32_t));
-    memcpy(l2, gaps, gapsLength*sizeof(int32_t));
+    memcpy(l, nonGaps, nonGapsLength*sizeof(int64_t));
+    memcpy(l2, gaps, gapsLength*sizeof(int64_t));
 
     for(i=from; i != to && l2Length != 0; i += change) {
         for(j=0; j<l2Length;) {
@@ -362,7 +362,7 @@ int32_t periodIsZero_Iter(int32_t *nonGaps, int32_t nonGapsLength, int32_t *gaps
                 else {
                     l3[l3Length++] = l2[j];
                 }
-                memmove(l2 + j, l2 + j + 1, (l2Size-(j+1))*sizeof(int32_t));
+                memmove(l2 + j, l2 + j + 1, (l2Size-(j+1))*sizeof(int64_t));
                 l2Length--;
             }
             else {
@@ -373,7 +373,7 @@ int32_t periodIsZero_Iter(int32_t *nonGaps, int32_t nonGapsLength, int32_t *gaps
     return l3Length;
 }
 
-struct BinaryTree *inSingleClade(struct BinaryTree *binaryTree, int32_t *gapSeqs, int32_t gapsLength) {
+struct BinaryTree *inSingleClade(struct BinaryTree *binaryTree, int64_t *gapSeqs, int64_t gapsLength) {
     struct BinaryTree *binarySubTree;
     if(binaryTree == NULL) {
         return NULL;
@@ -395,17 +395,17 @@ struct BinaryTree *inSingleClade(struct BinaryTree *binaryTree, int32_t *gapSeqs
     }
 }
 
-int32_t merge(int32_t *l, int32_t *l2, int32_t lLength, int32_t l2Length) {
-    int32_t i;
-    int32_t j;
-    int32_t k;
+int64_t merge(int64_t *l, int64_t *l2, int64_t lLength, int64_t l2Length) {
+    int64_t i;
+    int64_t j;
+    int64_t k;
 
     for(i=0; i<l2Length;) {
         j = l2[i];
         for(k=0; k<lLength; k++) {
             if(j <= l[k]) {
                 if(j < l[k]) {
-                    memmove(l+k+1, l+k, (lLength-k)*sizeof(int32_t));
+                    memmove(l+k+1, l+k, (lLength-k)*sizeof(int64_t));
                     l[k] = j;
                     lLength++;
                 }
@@ -420,17 +420,17 @@ int32_t merge(int32_t *l, int32_t *l2, int32_t lLength, int32_t l2Length) {
     return lLength;
 }
 
-int32_t periodIsZero(int32_t *nonGaps, int32_t nonGapsLength, int32_t *gapSeqs, int32_t gapsLength, int32_t columnIndex, char **alignment, int32_t alignmentLength, char GAP, struct BinaryTree *binaryTree) {
-    int32_t lLength;
-    int32_t l2Length;
+int64_t periodIsZero(int64_t *nonGaps, int64_t nonGapsLength, int64_t *gapSeqs, int64_t gapsLength, int64_t columnIndex, char **alignment, int64_t alignmentLength, char GAP, struct BinaryTree *binaryTree) {
+    int64_t lLength;
+    int64_t l2Length;
 
-    static int32_t *l;
-    static int32_t *l2;
-    static int32_t lSize;
-    static int32_t l2Size;
+    static int64_t *l;
+    static int64_t *l2;
+    static int64_t lSize;
+    static int64_t l2Size;
 
-    l = arrayResize(l, &lSize, gapsLength, sizeof(int32_t));
-    l2 = arrayResize(l2, &l2Size, gapsLength, sizeof(int32_t));
+    l = arrayResize(l, &lSize, gapsLength, sizeof(int64_t));
+    l2 = arrayResize(l2, &l2Size, gapsLength, sizeof(int64_t));
 
     lLength = periodIsZero_Iter(nonGaps, nonGapsLength, gapSeqs, gapsLength, columnIndex-1, -1, -1, alignment, GAP, l);
     l2Length = periodIsZero_Iter(nonGaps, nonGapsLength, gapSeqs, gapsLength, columnIndex+1, alignmentLength, 1, alignment, GAP, l2);
@@ -444,25 +444,25 @@ int32_t periodIsZero(int32_t *nonGaps, int32_t nonGapsLength, int32_t *gapSeqs, 
     return leafNoInSubtree(binaryTree->traversalID) == lLength;
 }
 
-void convertAlignmentToPhylogeneticInputConstraints_Recursion(char **alignment, int32_t alignmentLength, int32_t columnIndex, struct BinaryTree *binaryTree,
-                                                              int32_t *indices, int32_t relaxValue, struct hashtable **constraints, int32_t *seqLengths, int32_t seqNo,
+void convertAlignmentToPhylogeneticInputConstraints_Recursion(char **alignment, int64_t alignmentLength, int64_t columnIndex, struct BinaryTree *binaryTree,
+                                                              int64_t *indices, int64_t relaxValue, struct hashtable **constraints, int64_t *seqLengths, int64_t seqNo,
                                                               struct Chunks *intChunks, char GAP) {
-    int32_t i;
-    int32_t j;
-    int32_t k;
-    int32_t lLength;
-    int32_t l2Length;
+    int64_t i;
+    int64_t j;
+    int64_t k;
+    int64_t lLength;
+    int64_t l2Length;
 
-    static int32_t *l;
-    static int32_t *l2;
-    static int32_t lSize;
-    static int32_t l2Size;
+    static int64_t *l;
+    static int64_t *l2;
+    static int64_t lSize;
+    static int64_t l2Size;
 
     if(binaryTree->internal) {
         i = leftMostLeafNo(binaryTree->traversalID);
         j = rightMostLeafNo(binaryTree->traversalID)+1;
-        l = arrayResize(l, &lSize, j-i, sizeof(int32_t));
-        l2 = arrayResize(l2, &l2Size, j-i, sizeof(int32_t));
+        l = arrayResize(l, &lSize, j-i, sizeof(int64_t));
+        l2 = arrayResize(l2, &l2Size, j-i, sizeof(int64_t));
         lLength = 0;
         l2Length = 0;
 
@@ -486,16 +486,16 @@ void convertAlignmentToPhylogeneticInputConstraints_Recursion(char **alignment, 
     }
 }
 
-struct hashtable **convertAlignmentToPhylogeneticInputConstraints(char **alignment, int32_t alignmentLength, int32_t seqNo, int32_t *seqLengths,
-                                                   int32_t relaxValue, char GAP, struct Chunks *intChunks, struct BinaryTree *binaryTree) {
+struct hashtable **convertAlignmentToPhylogeneticInputConstraints(char **alignment, int64_t alignmentLength, int64_t seqNo, int64_t *seqLengths,
+                                                   int64_t relaxValue, char GAP, struct Chunks *intChunks, struct BinaryTree *binaryTree) {
     struct hashtable **constraints;
-    int32_t *indices;
-    int32_t i;
-    int32_t j;
+    int64_t *indices;
+    int64_t i;
+    int64_t j;
 
     //reads in a given alignment and converts it to a map of constraints
     constraints =  getEmptyConstraints(seqNo, TRUE, intChunks);
-    indices = st_calloc(seqNo, sizeof(int32_t)); //[0]*seqNo
+    indices = st_calloc(seqNo, sizeof(int64_t)); //[0]*seqNo
 
     for(i=0; i<alignmentLength; i++) {
         for(j=0; j<seqNo; j++) {
@@ -513,27 +513,27 @@ struct hashtable **convertAlignmentToPhylogeneticInputConstraints(char **alignme
     return constraints;
 }
 
-static int32_t selectedSeq;
+static int64_t selectedSeq;
 static struct hashtable **lessThanConstraints;
 static struct hashtable **lessThanOrEqualConstraints;
-static int32_t seqNo;
-static int32_t *seqLengths;
+static int64_t seqNo;
+static int64_t *seqLengths;
 
 static struct Constraints **primeConstraints;
-static int32_t *prime;
-static int32_t *constraintType;
-static int32_t *list;
-static int32_t listIndex;
-static int32_t **vertices;
+static int64_t *prime;
+static int64_t *constraintType;
+static int64_t *list;
+static int64_t listIndex;
+static int64_t **vertices;
 
-static int32_t *stack;
-static int32_t stackLength;
-static int32_t stackMaxLength;
+static int64_t *stack;
+static int64_t stackLength;
+static int64_t stackMaxLength;
 
-void searchFrom(int32_t vertexSeq, int32_t vertexPos, int32_t type, struct hashtable **constraintsLists) {
-    int32_t seq;
+void searchFrom(int64_t vertexSeq, int64_t vertexPos, int64_t type, struct hashtable **constraintsLists) {
+    int64_t seq;
     struct hashtable *constraints;
-    int32_t *i;
+    int64_t *i;
 
     //for seq in xrange(seqNo-1, -1, -1):
     for(seq=seqNo-1; seq>=0; seq--) {
@@ -541,7 +541,7 @@ void searchFrom(int32_t vertexSeq, int32_t vertexPos, int32_t type, struct hasht
             constraints = constraintsLists[vertexSeq*seqNo + seq];
             //if constraints.has_key(vertexPos):
             if ((i = hashtable_search(constraints, &vertexPos)) != NULL) {
-                stack = arrayPrepareAppend(stack, &stackMaxLength, stackLength+3, sizeof(int32_t));
+                stack = arrayPrepareAppend(stack, &stackMaxLength, stackLength+3, sizeof(int64_t));
                 stack[stackLength++] = type;
                 stack[stackLength++] = *i;
                 stack[stackLength++] = seq;
@@ -551,8 +551,8 @@ void searchFrom(int32_t vertexSeq, int32_t vertexPos, int32_t type, struct hasht
     }
 }
 
-void search(int32_t vertexSeq, int32_t vertexPos, int32_t type) {
-    int32_t vertexMark;
+void search(int64_t vertexSeq, int64_t vertexPos, int64_t type) {
+    int64_t vertexMark;
 
     while(TRUE) {
         vertexMark = vertices[vertexSeq][vertexPos];
@@ -584,11 +584,11 @@ void search(int32_t vertexSeq, int32_t vertexPos, int32_t type) {
     }
 }
 
-void markup(int32_t vertexSeq, int32_t vertexPos) {
+void markup(int64_t vertexSeq, int64_t vertexPos) {
     struct hashtable *constraints;
-    int32_t vertexMark;
-    int32_t seq;
-    int32_t *i;
+    int64_t vertexMark;
+    int64_t seq;
+    int64_t *i;
 
     while(TRUE) {
         vertexMark = vertices[vertexSeq][vertexPos];
@@ -598,7 +598,7 @@ void markup(int32_t vertexSeq, int32_t vertexPos) {
                 constraints = lessThanOrEqualConstraints[vertexSeq * seqNo + seq];
                 if((i = hashtable_search(constraints, &vertexPos)) != NULL) { //constraints.has_key(vertexPos)) {
                     //i = constraints[vertexPos];
-                    stack = arrayPrepareAppend(stack, &stackMaxLength, stackLength+2, sizeof(int32_t));
+                    stack = arrayPrepareAppend(stack, &stackMaxLength, stackLength+2, sizeof(int64_t));
                     stack[stackLength++] = *i;
                     stack[stackLength++] = seq;
                     //stack.append((seq, i))
@@ -614,18 +614,18 @@ void markup(int32_t vertexSeq, int32_t vertexPos) {
     }
 }
 
-struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, struct hashtable **lessThanOrEqualConstraintsA, int32_t selectedSeqA, int32_t seqNoA, int32_t *seqLengthsA) {
+struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, struct hashtable **lessThanOrEqualConstraintsA, int64_t selectedSeqA, int64_t seqNoA, int64_t *seqLengthsA) {
     //computes set of prime constraints from set of input constraints
     //
     //exact copied, non-optimised implementation of Myers and Millers prime constraINT_32 algorithm
     //see page 14 of Progressive Multiple Alignment with Constraints, Myers et al.
 
-    int32_t i;
-    int32_t j;
-    int32_t k;
-    int32_t vertexPos;
-    int32_t seq;
-    int32_t *temp;
+    int64_t i;
+    int64_t j;
+    int64_t k;
+    int64_t vertexPos;
+    int64_t seq;
+    int64_t *temp;
 
     selectedSeq = selectedSeqA;
     lessThanConstraints = lessThanConstraintsA;
@@ -638,22 +638,22 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
         primeConstraints[i] = constructConstraintsBackward();
     }
 
-    prime = st_malloc(sizeof(int32_t)*seqNo); //[sys.maxint]*seqNo
+    prime = st_malloc(sizeof(int64_t)*seqNo); //[sys.maxint]*seqNo
     for(i=0; i<seqNo; i++) {
         prime[i] = INT32_MAX;
     }
 
-    constraintType = st_malloc(sizeof(int32_t)*seqNo); //[CONSTRAINT_UNDECIDED]*seqNo
+    constraintType = st_malloc(sizeof(int64_t)*seqNo); //[CONSTRAINT_UNDECIDED]*seqNo
     for(i=0; i<seqNo; i++) {
         constraintType[i] = CONSTRAINT_UNDECIDED;
     }
 
-    list = st_malloc(sizeof(int32_t)*seqNo); //[]
+    list = st_malloc(sizeof(int64_t)*seqNo); //[]
 
-    vertices = st_malloc(sizeof(int32_t *)*seqNo);
+    vertices = st_malloc(sizeof(int64_t *)*seqNo);
     for(i=0; i<seqNo; i++) {
         k = seqLengths[i];
-        temp = st_malloc(sizeof(int32_t)*k);
+        temp = st_malloc(sizeof(int64_t)*k);
         vertices[i] = temp;
         for(j=0; j<k; j++) {
             temp[j] = CONSTRAINT_UNDECIDED;
@@ -661,7 +661,7 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
     }
 
     stackMaxLength = STACK_BASE_SIZE;
-    stack = st_malloc(sizeof(int32_t)*stackMaxLength);
+    stack = st_malloc(sizeof(int64_t)*stackMaxLength);
     stackLength = 0;
     //vertices = [ [ CONSTRAINT_UNDECIDED for pos in xrange(0, seqLengths[seq])]
     //            for seq in xrange(0, seqNo) ]
@@ -709,17 +709,17 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
 
 struct Constraints ***buildAllConstraints_StartFromMinusOne(struct hashtable **lessThanConstraints,
                                                             struct hashtable **lessThanOrEqualConstraints,
-                                                            int32_t seqNo, int32_t *seqLengths) {
+                                                            int64_t seqNo, int64_t *seqLengths) {
     //the basic constraINT_32 algorithm assumes an offset starting at 0, but we need a -1 offset, for the position
     //before the first position, this is what this dirty wrapper function achieves
-    int32_t *temp;
-    int32_t i;
-    int32_t j;
-    int32_t k;
+    int64_t *temp;
+    int64_t i;
+    int64_t j;
+    int64_t k;
     struct Constraints ***primeConstraintsMatrix;
     struct Constraints *primeConstraints;
 
-    temp = st_malloc(sizeof(int32_t)*seqNo);
+    temp = st_malloc(sizeof(int64_t)*seqNo);
     for(i=0; i<seqNo; i++) {
         temp[i] = seqLengths[i]+2;
     }
@@ -747,15 +747,15 @@ struct Constraints ***buildAllConstraints_StartFromMinusOne(struct hashtable **l
     return primeConstraintsMatrix;
 }
 
-struct Constraints ***buildAllConstraints_FromAlignment(char **alignment, int32_t alignmentLength, int32_t seqNo, int32_t *seqLengths,
-                                                        int32_t relaxValue, int32_t GAP, struct BinaryTree *binaryTree, int32_t totalConstraints) {
-    int32_t i;
+struct Constraints ***buildAllConstraints_FromAlignment(char **alignment, int64_t alignmentLength, int64_t seqNo, int64_t *seqLengths,
+                                                        int64_t relaxValue, int64_t GAP, struct BinaryTree *binaryTree, int64_t totalConstraints) {
+    int64_t i;
     struct hashtable **lessThanConstraints;
     struct hashtable **lessThanOrEqualConstraints;
     struct Constraints ***primeConstraintsMatrix;
     struct Chunks *intChunks;
 
-    intChunks = constructChunks(MEDIUM_CHUNK_SIZE, sizeof(int32_t));
+    intChunks = constructChunks(MEDIUM_CHUNK_SIZE, sizeof(int64_t));
     if(alignment != NULL) {
         if(totalConstraints) {
             lessThanConstraints = convertAlignmentToInputConstraints(alignment, alignmentLength, seqNo, seqLengths, relaxValue, GAP, intChunks);

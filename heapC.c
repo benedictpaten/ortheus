@@ -17,10 +17,10 @@
 #include <stdio.h> 
 #include <limits.h>
 
-struct heap *heap_create(uint32_t max_entries)
+struct heap *heap_create(uint64_t max_entries)
 {
     struct heap *heap;
-    uint32_t i;
+    uint64_t i;
     
     heap = (struct heap *) st_malloc(sizeof(struct heap));
     if (!heap)
@@ -75,7 +75,7 @@ void heapify(struct heap *heap, int64_t i)
     }
 }
 
-int32_t heap_expand(struct heap *heap)
+int64_t heap_expand(struct heap *heap)
 {
     int64_t *tmp;
     tmp =
@@ -90,9 +90,9 @@ int32_t heap_expand(struct heap *heap)
     return 0;
 }
 
-int32_t heap_insert(struct heap *heap, int64_t entry)
+int64_t heap_insert(struct heap *heap, int64_t entry)
 {
-    int32_t i;
+    int64_t i;
 
     /* Expand the heap if necessary */
     if (heap->num_entries == heap->max_entries) {
@@ -138,14 +138,14 @@ int64_t heap_peek(struct heap *heap) {
     return heap->entries[0];
 }
 
-int32_t heap_empty(struct heap *heap) { 
+int64_t heap_empty(struct heap *heap) { 
     return !(heap->num_entries);
 }
 
 
 void heap_clean(struct heap *heap) 
 {
-    uint32_t i;
+    uint64_t i;
     
     //memset(heap->entries, LONG_64_MIN, heap->num_entries * sizeof(LONG_64));
     for(i=0; i<heap->num_entries; i++) {

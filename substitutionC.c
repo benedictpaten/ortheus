@@ -19,7 +19,7 @@
 struct SubModel *constructSubModel(float *forward,
                                    float *backward,
                                    float *stationaryDistribution,
-                                   int32_t alphabetSize) {
+                                   int64_t alphabetSize) {
     struct SubModel *subModel;
 
     subModel = (struct SubModel *)st_malloc(sizeof(struct SubModel));
@@ -45,12 +45,12 @@ void destructSubModel(struct SubModel *subModel) {
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-void transformWVByDistance(float *wV, float *subMatrix, float *result, int32_t alphabetSize) {
+void transformWVByDistance(float *wV, float *subMatrix, float *result, int64_t alphabetSize) {
     //transform wV by given substitution matrix
-    int32_t i;
+    int64_t i;
     float j;
     float *k;
-    int32_t l;
+    int64_t l;
     static float nc[MAX_ALPHABET_SIZE];
 
     for(i=0; i<alphabetSize; i++) {
@@ -68,29 +68,29 @@ void transformWVByDistance(float *wV, float *subMatrix, float *result, int32_t a
     memcpy(result, &nc, sizeof(float)*alphabetSize);
 }
 
-void copyWV(float *wVX, float *wVY, int32_t alphabetSize) {
-    int32_t i;
+void copyWV(float *wVX, float *wVY, int64_t alphabetSize) {
+    int64_t i;
 
     for(i=0; i<alphabetSize; i++) {
         wVY[i] = wVX[i];
     }
 }
 
-void multiplyWV(float *wVX, float *wVY, float *result, int32_t alphabetSize) {
-    int32_t i;
+void multiplyWV(float *wVX, float *wVY, float *result, int64_t alphabetSize) {
+    int64_t i;
 
     for(i=0; i<alphabetSize; i++) {
         result[i] = wVX[i] * wVY[i];
     }
 }
 
-void normaliseWV(float *wV, float *result, int32_t alphabetSize) {
+void normaliseWV(float *wV, float *result, int64_t alphabetSize) {
     normaliseWV_GiveFac(wV, result, 1.0f, alphabetSize);
 }
 
-void normaliseWV_GiveFac(float *wV, float *result, float normFac, int32_t alphabetSize) {
+void normaliseWV_GiveFac(float *wV, float *result, float normFac, int64_t alphabetSize) {
      //make char probs divisible by one
-    int32_t i;
+    int64_t i;
     float j;
 
     j = wV[0];
@@ -105,8 +105,8 @@ void normaliseWV_GiveFac(float *wV, float *result, float normFac, int32_t alphab
     //return [ i/f for i in wV ]
 }
 
-float combineWV(float *wVX, float *wVY, int32_t alphabetSize) {
-    int32_t i;
+float combineWV(float *wVX, float *wVY, int64_t alphabetSize) {
+    int64_t i;
     float j;
 
     j = wVX[0] * wVY[0];;
@@ -116,8 +116,8 @@ float combineWV(float *wVX, float *wVY, int32_t alphabetSize) {
     return j;
 }
 
-float sumWV(float *wV, int32_t alphabetSize) {
-    int32_t i;
+float sumWV(float *wV, int64_t alphabetSize) {
+    int64_t i;
     float j;
 
     j = wV[0];
@@ -127,8 +127,8 @@ float sumWV(float *wV, int32_t alphabetSize) {
     return j;
 }
 
-void addWV(float *wVX, float *wVY, float *result, int32_t alphabetSize) {
-    int32_t i;
+void addWV(float *wVX, float *wVY, float *result, int64_t alphabetSize) {
+    int64_t i;
 
     for(i=0; i<alphabetSize; i++) {
         result[i] = wVX[i] + wVY[i];
@@ -137,7 +137,7 @@ void addWV(float *wVX, float *wVY, float *result, int32_t alphabetSize) {
 
 float * dNAMap_IUPACToWVFn(char i) {
     static float j[4];
-    int32_t k;
+    int64_t k;
 
     for(k=0; k<4; k++) {
         j[k] = 0.0f;
@@ -170,7 +170,7 @@ float * dNAMap_IUPACToWVFn(char i) {
    return j;
 }
 
-int32_t subMatCo(int32_t i, int32_t j, int32_t alphabetSize) {
+int64_t subMatCo(int64_t i, int64_t j, int64_t alphabetSize) {
     return i *alphabetSize + j;
 }
 
@@ -182,13 +182,13 @@ int32_t subMatCo(int32_t i, int32_t j, int32_t alphabetSize) {
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-int32_t valuesAreClose(float a, float b, float tolerance) {
+int64_t valuesAreClose(float a, float b, float tolerance) {
     return a <= b + tolerance && a >= b - tolerance;
 }
 
-void checkMatrix(float *freqVec, float *matrix, int32_t alphabetSize) {
-    int32_t i;
-    int32_t j;
+void checkMatrix(float *freqVec, float *matrix, int64_t alphabetSize) {
+    int64_t i;
+    int64_t j;
 
     float v1;
     float v2;
@@ -204,9 +204,9 @@ void checkMatrix(float *freqVec, float *matrix, int32_t alphabetSize) {
     }
 }
 
-float *reverseSubMatrixInPlace(float *wV, int32_t alphabetSize) {
-    int32_t i;
-    int32_t j;
+float *reverseSubMatrixInPlace(float *wV, int64_t alphabetSize) {
+    int64_t i;
+    int64_t j;
     float k;
 
     for(i=0; i<alphabetSize; i++) {
@@ -221,9 +221,9 @@ float *reverseSubMatrixInPlace(float *wV, int32_t alphabetSize) {
 
 float *tamuraNei(float distance, float freqA, float freqC, float freqG, float freqT,
                     float alphaPurine, float alphaPyrimidine, float beta) {
-    int32_t i;
-    int32_t j;
-    int32_t k;
+    int64_t i;
+    int64_t j;
+    int64_t k;
     float l;
     float *matrix;
 
@@ -273,7 +273,7 @@ struct SubModel *constructHKYSubModel(float distance,
                                             float freqA, float freqC, float freqG, float freqT,
                                             float transitionTransversionRatio) {
     float *i;
-    int32_t k;
+    int64_t k;
 
     float freq[] = { freqA, freqC, freqG, freqT };
 
@@ -287,7 +287,7 @@ float *jukesCantor(float d) {
     float i;
     float j;
     float *k;
-    int32_t l;
+    int64_t l;
 
     i = 0.25 + 0.75*exp(-(4.0/3.0)*d);
     j = 0.25 - 0.25*exp(-(4.0/3.0)*d);
@@ -303,7 +303,7 @@ float *jukesCantor(float d) {
 
 struct SubModel *constructJukesCantorSubModel(float distance) {
     float *i;
-    int32_t k;
+    int64_t k;
 
     i = (float *)st_malloc(sizeof(float)*4);
     for(k=0; k<4; k++) {
