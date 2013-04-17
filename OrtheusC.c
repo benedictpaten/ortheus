@@ -178,7 +178,7 @@ struct SequenceGraph *convertSeqToSeqGraph(float *seq, int64_t seqLength, struct
     //converts a list chars to a sequence graph
     for(i=0; i<seqLength; i++) {
         wV = seq + (i*ALPHABET_SIZE);
-        treeNode = copyConstructTreeNode(TREE_NODE_LEAF, INT32_MAX, traversalID, NULL, NULL, wV);
+        treeNode = copyConstructTreeNode(TREE_NODE_LEAF, INT64_MAX, traversalID, NULL, NULL, wV);
         edges->list[i] = copyConstructEdge(i, i+1, LOG_ONE, LOG_ZERO, wV, FALSE, treeNode, i);
     }
     return constructSequenceGraph(edges, seqLength+1);
@@ -297,7 +297,7 @@ struct Constraints ***buildPrimeConstraints(char *alignmentFile, int64_t seqNo, 
         //end
     }
     else {
-        primeConstraints = buildAllConstraints_FromAlignment(NULL, INT32_MIN, seqNo, (int64_t *)seqLengths, CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE, '-', binaryTree, TOTAL_CONSTRAINTS);
+        primeConstraints = buildAllConstraints_FromAlignment(NULL, INT64_MIN, seqNo, (int64_t *)seqLengths, CONSTRAINT_HALF_ANTI_DIAGONAL_LOOSEN_SIZE, '-', binaryTree, TOTAL_CONSTRAINTS);
     }
     st_logInfo("Finished parsing alignment file\n");
     st_logInfo("Built constraints lists\n");

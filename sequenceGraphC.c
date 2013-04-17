@@ -1842,7 +1842,7 @@ void compactVertex(struct List *toEdges, struct List *fromEdges, struct Sequence
             treeNode->left = edgeFrom->treeNode;
             edgeFrom->treeNode->refCount++;
             listAppend(sequenceGraph->edgesArrangedByToVertex[edge->to], copyConstructEdge(edgeFrom->from, edge->to, edgeFrom->edgeScore + edge->edgeScore, edge->subScore,
-                                                                                           edge->wV, edge->silent, treeNode, INT32_MAX));
+                                                                                           edge->wV, edge->silent, treeNode, INT64_MAX));
         }
     }
     edgeFrom = toEdges->list[toEdges->length-1];
@@ -1883,7 +1883,7 @@ struct SequenceGraph *compactSilentVertices(struct SequenceGraph *sequenceGraph)
         //((struct Edge *)fromEdges->list[0])->silent &&
         fromEdges->length + toEdges->length + 1 >= fromEdges->length * toEdges->length) { //the incoming edges are silent, so we can skip them out if needed
             vertexShift++;
-            verticeShifts[vertex] = INT32_MAX;
+            verticeShifts[vertex] = INT64_MAX;
             compactVertex(toEdges, fromEdges, sequenceGraph);
         }
         else {
@@ -2074,7 +2074,7 @@ struct SequenceGraph *traceBackMatrix(struct AlignmentDataStructures *aDS) {
         aDS->getTreeNode = NULL;
         aDS->edgeX = NULL;
         aDS->edgeY = NULL;
-        aDS->from = INT32_MAX;
+        aDS->from = INT64_MAX;
         //end
         edgesX = aDS->sequenceGraphX->edgesArrangedByToVertex[toX];
         edgesY = aDS->sequenceGraphY->edgesArrangedByToVertex[toY];
@@ -2436,11 +2436,11 @@ struct SequenceGraph *computeEdgeGraph(struct SequenceGraph *sequenceGraphX, str
     aDS->potentialEdgeCosts = st_malloc(sizeof(float)*aDS->potentialEdges_Size);
     aDS->potentialEdges_Index = 0;
     //branches for composing tree, used in traceback
-    aDS->deleteNodeX = copyConstructTreeNode(TREE_NODE_DELETE, INT32_MAX, traversalIDX, NULL, NULL, NULL);
+    aDS->deleteNodeX = copyConstructTreeNode(TREE_NODE_DELETE, INT64_MAX, traversalIDX, NULL, NULL, NULL);
     //aDS->subModelX = subModels[traversalIDX->mid];
-    aDS->deleteNodeY = copyConstructTreeNode(TREE_NODE_DELETE, INT32_MAX, traversalIDY, NULL, NULL, NULL);
+    aDS->deleteNodeY = copyConstructTreeNode(TREE_NODE_DELETE, INT64_MAX, traversalIDY, NULL, NULL, NULL);
     //aDS->subModelY = subModels[traversalIDY->mid];
-    aDS->state = INT32_MAX;
+    aDS->state = INT64_MAX;
     aDS->edgeX = NULL;
     aDS->edgeY = NULL;
     aDS->treeStates = treeStates;

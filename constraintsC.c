@@ -19,8 +19,8 @@
 #define CONSTRAINT_HASHTABLE_BASE_SIZE 1000
 #define STACK_BASE_SIZE 1000
 
-#define CONSTRAINT_MIN INT32_MIN
-#define CONSTRAINT_MAX INT32_MAX
+#define CONSTRAINT_MIN INT64_MIN
+#define CONSTRAINT_MAX INT64_MAX
 
 
 /////////////////////////////////////////////////////////
@@ -640,7 +640,7 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
 
     prime = st_malloc(sizeof(int64_t)*seqNo); //[sys.maxint]*seqNo
     for(i=0; i<seqNo; i++) {
-        prime[i] = INT32_MAX;
+        prime[i] = INT64_MAX;
     }
 
     constraintType = st_malloc(sizeof(int64_t)*seqNo); //[CONSTRAINT_UNDECIDED]*seqNo
@@ -686,7 +686,7 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
     free(constraintType);
 
     free(list);
-    listIndex = INT32_MAX;
+    listIndex = INT64_MAX;
 
     for(i=0; i<seqNo; i++) {
         free(vertices[i]);
@@ -694,13 +694,13 @@ struct Constraints **buildConstraints(struct hashtable **lessThanConstraintsA, s
     free(vertices);
 
     free(stack);
-    stackLength = INT32_MAX;
-    stackMaxLength = INT32_MAX;
+    stackLength = INT64_MAX;
+    stackMaxLength = INT64_MAX;
 
-    selectedSeq = INT32_MAX;
+    selectedSeq = INT64_MAX;
     lessThanConstraints = NULL;
     lessThanOrEqualConstraints = NULL;
-    seqNo = INT32_MAX;
+    seqNo = INT64_MAX;
     seqLengths = NULL;
     //end clean up
 
