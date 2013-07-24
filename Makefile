@@ -25,7 +25,7 @@ ${binPath}/Ortheus.py : Ortheus.py old/Nester.py old/Stitcher.py old/EstimateTre
 	chmod +x ${binPath}/Ortheus.py
 
 ${binPath}/ortheus_core : *.c *.h xyzModelC.c xyzModelC.h ${basicLibsDependencies}
-	${cxx} ${cflags} -I ${libPath} -o ${binPath}/ortheus_core *.c ${basicLibs}
+	${cxx} ${cflags} -I ${libPath} -o ${binPath}/ortheus_core *.c ${basicLibs} -lm
 
 # stdin from </dev/null works around stray stdin read on OS/X that hangs backgroud
 # jobs
