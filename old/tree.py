@@ -584,24 +584,24 @@ def moveRoot(root, branch):
     """
     if root.traversalID.mid == branch:
         return ortheus.old.bioio.newickTreeParser(ortheus.old.bioio.printBinaryTree(root, True))
-    def fn2(tree, seq):
+    def fn2(tree, seq, distance):
         if seq != None:
-            return '(' + ortheus.old.bioio.printBinaryTree(tree, True)[:-1] + ',' + seq + ')'
-        return ortheus.old.bioio.printBinaryTree(tree, True)[:-1]
+            return '(' + ortheus.old.bioio.printBinaryTree(tree, True)[:-1] + ',' + seq + (':%s' % distance) + ')'
+        return '(' + ortheus.old.bioio.printBinaryTree(tree, True)[:-1] + ')'
     def fn(tree, seq):
         if tree.traversalID.mid == branch:
             i = tree.distance
             tree.distance /= 2
-            seq = '(' + ortheus.old.bioio.printBinaryTree(tree, True)[:-1] + ',(' + seq + ('):%s' % tree.distance) + ');'
+            seq = '(' + ortheus.old.bioio.printBinaryTree(tree, True)[:-1] + ',' + seq + (':%s' % tree.distance) + ');'
             tree.distance = i
             return seq
         if tree.internal:
             if branch < tree.traversalID.mid:
-                seq = fn2(tree.right, seq)
+                seq = fn2(tree.right, seq, tree.distance)
                 return fn(tree.left, seq)
             else:
                 assert branch > tree.traversalID.mid
-                seq = fn2(tree.left, seq)
+                seq = fn2(tree.left, seq, tree.distance)
                 return fn(tree.right, seq)
         else:
             return ortheus.old.bioio.printBinaryTree(tree, True)[:-1]
