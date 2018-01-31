@@ -709,7 +709,7 @@ def calculateProbableRootOfGeneTree(speciesTree, geneTree, processID=lambda x : 
     #run dup calc on each tree
     #return tree with fewest number of dups
     if geneTree.traversalID.midEnd <= 3:
-        return (0, 0, geneTree)
+        return (geneTree, 0, 0)
     checkGeneTreeMatchesSpeciesTree(speciesTree, geneTree, processID)
     l = []
     def fn(tree):
