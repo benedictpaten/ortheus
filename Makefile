@@ -31,13 +31,13 @@ ${binPath}/ortheus_core : *.c *.h xyzModelC.c xyzModelC.h ${basicLibsDependencie
 # jobs
 xyzModelC.c xyzModelC.h : ${model} ${paramModel} TransducerComposer.py TransducerCompiler.py
 	rm -f model.otra xyzModelC.c xyzModelC.h ${modelPath}/model.dot ${modelPath}/ortheusmodel.pdf
-	python TransducerComposer.py ${model} temp.otra ${modelPath}/model.dot ${collapseCoefficient} </dev/null
+	python2 TransducerComposer.py ${model} temp.otra ${modelPath}/model.dot ${collapseCoefficient} </dev/null
 	cat  ${paramModel} temp.otra > model.otra
 	rm temp.otra
-	python  TransducerCompiler.py model.otra xyzModelC.c xyzModelC.h </dev/null
+	python2  TransducerCompiler.py model.otra xyzModelC.c xyzModelC.h </dev/null
 	#Use this line if you want the pretty picture
 	#${makeGraph} ${modelPath}/model.dot -Tpdf > ${modelPath}/model.pdf
   
 test :
 	#Running python allTests.py
-	PYTHONPATH=.. PATH=../../bin:$$PATH python allTests.py --testLength=SHORT --logDebug
+	PYTHONPATH=.. PATH=../../bin:$$PATH python2 allTests.py --testLength=SHORT --logDebug
