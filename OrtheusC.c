@@ -8,6 +8,8 @@
 #include <time.h>
 #include <assert.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "fastCMaths.h"
 #include "bioioC.h"
@@ -304,7 +306,7 @@ struct Constraints ***buildPrimeConstraints(char *alignmentFile, int64_t seqNo, 
     return primeConstraints;
 }
 
-struct List *parseSequences(char **argv, int64_t inputSequenceNumber, int64_t *seqNo, int64_t **seqLengthsA) {
+struct List *parseSequences(struct List *inputSequences, int64_t *seqNo, int64_t **seqLengthsA) {
     int64_t i;
     struct List *seqs;
     struct List *seqLengths;
@@ -315,9 +317,9 @@ struct List *parseSequences(char **argv, int64_t inputSequenceNumber, int64_t *s
     seqLengths = constructEmptyList(0, free);
     seqs = constructEmptyList(0, free);
     fastaNames = constructEmptyList(0, free);
-    for(i=0; i<inputSequenceNumber; i++) {
-        st_logInfo("Sequence file : %s\n", argv[i]);
-        fastaStream = fopen(argv[i], "r");
+    for(i = 0; i < inputSequences->length; i++) {
+        st_logInfo("Sequence file : %s\n", (char *)inputSequences->list[i]);
+        fastaStream = fopen((char *)inputSequences->list[i], "r");
         fastaRead(fastaStream, seqs, seqLengths, fastaNames);
         fclose(fastaStream);
     }
@@ -478,6 +480,26 @@ void shrinkAlignment(struct List *linearAlignment, int64_t columnGap) {
     }
 }
 
+char *readNewickTreeString(char *inputNewickFile) {
+    FILE *newickFile;
+    char *newickTreeString = NULL;
+    size_t len = 0;
+
+    newickFile = fopen(inputNewickFile, "r");
+    if (newickFile == NULL) {
+        st_logInfo("Couldn't open file with Newick tree string '%s'\n", inputNewickFile);
+        exit(1);
+    }
+    if (getline(&newickTreeString, &len, newickFile) == -1) {
+        st_logInfo("Empty newick tree file '%s'\n", inputNewickFile);
+        exit(1);
+    }
+    fclose(newickFile);
+    // Remove trailing "\n" in seqFile
+    newickTreeString[strcspn(newickTreeString, "\n")] = 0;
+    return newickTreeString;
+}
+
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
@@ -506,8 +528,10 @@ int main(int argc, char *argv[]) {
     int64_t seqNo;
     int64_t seqInc = 1;
     int64_t startSeq = 0;
-    char **inputSequences = NULL;
-    int64_t inputSequenceNumber = INT_MAX;
+    struct List *inputSequences = NULL;
+    FILE *stream;
+    char *seqFile = NULL;
+    size_t len = 0;
     FILE *outputAlignment = NULL;
 
     char *constraintAlignmentFile = NULL;
@@ -533,8 +557,10 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Ortheus [MODIFIER_ARGUMENTS]\n");
         fprintf(stderr, "A program for the inferral of ancestor sequences\n");
         fprintf(stderr, "Arguments:\n");
-        fprintf(stderr, "\t-a [FILE]xN input sequence files (argument is essential)\n");
-        fprintf(stderr, "\t-b [STRING] newick tree string (argument is essential, parser is pretty tolerant, but maybe dangerous)\n");
+        fprintf(stderr, "\t-a [FILE]xN input sequence files (-a or -A required)\n");
+        fprintf(stderr, "\t-A [FILE] file containing all the input sequence files (-a or -A required)\n");
+        fprintf(stderr, "\t-b [STRING] newick tree string (-b or -B is essential, parser is pretty tolerant, but maybe dangerous)\n");
+        fprintf(stderr, "\t-B [FILE] newick tree file (-b or -B is essential, parser is pretty tolerant, but maybe dangerous)\n");
         fprintf(stderr, "\t-c [FILE] constraining alignment (if not present, assumes not constraints)\n");
         fprintf(stderr, "\t-d [FILE] output alignment file (if not present, writes to standard out)\n");
         fprintf(stderr, "\t-e set logging level to DEBUG (lowest level stuff, default is OFF)\n");
@@ -570,16 +596,34 @@ int main(int argc, char *argv[]) {
         assert(mod[0] == '-');
         switch(mod[1]) {
             case 'a':
-                inputSequences = argv + ++i;
-                inputSequenceNumber = 0;
-                while(i < argc && argv[i][0] != '-') {
-                    inputSequenceNumber++;
-                    i++;
+                inputSequences = constructEmptyList(0, free);
+                while(i < argc && argv[++i][0] != '-') {
+                    listAppend(inputSequences, argv[i]);
                 }
                 i--;
                 break;
+            case 'A':
+                inputSequences = constructEmptyList(0, free);
+                stream = fopen(argv[++i], "r");
+                if (stream == NULL) {
+                    st_logInfo("Couldn't open file with input sequences '%s'\n", argv[i]);
+                    exit(1);
+                }
+                while (getline(&seqFile, &len, stream) != -1) {
+                    // Remove trailing "\n" in seqFile
+                    seqFile[strcspn(seqFile, "\n")] = 0;
+                    st_logInfo("Sequence file : %s\n", seqFile);
+                    listAppend(inputSequences, seqFile);
+                    // Set seqFile to NULL to allocate a new buffer
+                    seqFile = NULL;
+                }
+                fclose(stream);
+                break;
             case 'b':
                 newickTreeString = argv[++i];
+                break;
+            case 'B':
+                newickTreeString = readNewickTreeString(argv[++i]);
                 break;
             case 'c':
                 constraintAlignmentFile = argv[++i];
@@ -643,6 +687,10 @@ int main(int argc, char *argv[]) {
     st_logInfo("Number of samples " INT_STRING " \n", NUMBER_OF_SAMPLES);
 
     //tree stuff
+    if (! newickTreeString) {
+        st_logInfo("Missing required argument '-b' or '-B'\n");
+        exit(1);
+    }
     st_logInfo("Newick-Tree : %s\n", newickTreeString);
     newickTree = newickTreeParser(newickTreeString, DEFAULT_BINARY_TREE_DISTANCE, 0);
     newickTreeLeafStrings = binaryTree_getOrderedLeafStrings(newickTree);
@@ -659,7 +707,12 @@ int main(int argc, char *argv[]) {
     }
     st_logInfo("Newick-Tree seems okay\n");
     //parse sequences
-    seqs = parseSequences(inputSequences, inputSequenceNumber, &seqNo, &seqLengths);
+    if (inputSequences) {
+        seqs = parseSequences(inputSequences, &seqNo, &seqLengths);
+    } else {
+        st_logInfo("Missing required argument '-a' or '-A'\n");
+        exit(1);
+    }
     combinedTransitionModels = st_malloc(sizeof(void *)*nodeNumber);
     for(i=0; i<nodeNumber; i++) {
         st_logInfo("Newick-Tree node names : %s\n", newickTreeStrings[i]);
